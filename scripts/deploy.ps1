@@ -104,10 +104,48 @@ if ($Backup) {
 
 if (-not $DryRun) { Ensure-Backup }
 
+# A preview or dev server keeps a handle on out\ and .next\, and the raw
+# IOException from Remove-Item does not say so. Retry briefly for transient
+# locks (antivirus, the search indexer), then name what is holding it.
+function Remove-Tree($path, $label) {
+    if (-not (Test-Path $path)) { return }
+    for ($i = 1; $i -le 5; $i++) {
+        try {
+            Remove-Item $path -Recurse -Force -ErrorAction Stop
+            return
+        } catch {
+            if ($i -eq 5) { break }
+            Start-Sleep -Milliseconds 400
+        }
+    }
+    $holders = @()
+    foreach ($proc in (Get-CimInstance Win32_Process -Filter "Name='node.exe'")) {
+        $cmd = $proc.CommandLine
+        if ($cmd -and ($cmd -match 'serve|next dev|http-server')) {
+            $holders += ("    PID {0}  ->  {1}" -f $proc.ProcessId, $cmd.Trim())
+        }
+    }
+    $msg = "Cannot delete $label - another process is using it."
+    if ($holders.Count -gt 0) {
+        $msg += "`n`n  A preview or dev server is still running:`n"
+        $msg += ($holders -join "`n")
+        $msg += "`n`n  Stop it, then run this script again:`n"
+        foreach ($proc in (Get-CimInstance Win32_Process -Filter "Name='node.exe'")) {
+            $cmd = $proc.CommandLine
+            if ($cmd -and ($cmd -match 'serve|next dev|http-server')) {
+                $msg += ("    Stop-Process -Id {0} -Force`n" -f $proc.ProcessId)
+            }
+        }
+    } else {
+        $msg += "`n`n  Close any terminal, editor or Explorer window open inside $label and try again."
+    }
+    throw $msg
+}
+
 # ------------------------------------------------------------------- build --
 Step "Building the static site"
-if (Test-Path "$root\out")   { Remove-Item "$root\out" -Recurse -Force }
-if (Test-Path "$root\.next") { Remove-Item "$root\.next" -Recurse -Force }
+Remove-Tree "$root\out" "out\"
+Remove-Tree "$root\.next" ".next\"
 Invoke-Checked npm @("run", "build") "Build"
 
 # ------------------------------------------------------------------ verify --
