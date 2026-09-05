@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
+import { observeReveal } from "./revealRuntime";
 
 export type RevealVariant = "up" | "fade" | "clip" | "scale" | "blur" | "right" | "left" | "glass";
 
@@ -12,8 +13,6 @@ type RevealProps = {
   variant?: RevealVariant;
   /** Stagger delay in ms. */
   delay?: number;
-  /** Fraction of the element that must be visible. */
-  threshold?: number;
   style?: CSSProperties;
   id?: string;
 };
@@ -28,7 +27,6 @@ export function Reveal({
   className,
   variant = "up",
   delay = 0,
-  threshold = 0.15,
   style,
   id,
 }: RevealProps) {
@@ -37,24 +35,8 @@ export function Reveal({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (typeof IntersectionObserver === "undefined") {
-      el.classList.add("is-visible");
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            el.classList.add("is-visible");
-            io.disconnect();
-          }
-        }
-      },
-      { threshold, rootMargin: "0px 0px -8% 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [threshold]);
+    return observeReveal(el);
+  }, []);
 
   return (
     <Tag

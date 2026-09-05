@@ -518,6 +518,17 @@ html {
   filter: blur(6px);
 }
 
+/* If scripting is unavailable the runtime never runs, so the reveal must not
+   hide anything: content outranks the animation. */
+@media (scripting: none) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    filter: none;
+  }
+}
+
 [data-reveal].is-visible {
   opacity: 1;
   transform: none;
