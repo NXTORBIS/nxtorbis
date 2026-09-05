@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ScrollRail } from "@/components/sections/ScrollRail";
 import { Cursor } from "@/components/ui/Cursor";
 import { GlassRuntime } from "@/components/ui/GlassRuntime";
+import { LoadingExperience } from "@/components/loader/LoadingExperience";
 import "./globals.css";
 
 const inter = Inter({
@@ -76,10 +77,38 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+
+/**
+ * Entrance boot script. Runs before the rest of the document is parsed, so the
+ * entrance is on screen from the first paint rather than appearing after
+ * hydration on top of a homepage the visitor has already seen.
+ *
+ * It does three things and nothing else:
+ *   - one entrance per session, so returning to the tab is not a performance
+ *   - marks the document, which is what the CSS keys off; with scripting
+ *     unavailable the class is never set and the site is simply itself
+ *   - clears itself on a timer, so a build that never hydrates still cannot
+ *     leave anyone stranded behind a decorative layer
+ *
+ * That last timer also un-hides the reveal content. If the app never took
+ * over, the reveal runtime never ran either, and `scripting: none` does not
+ * apply because scripting *is* enabled — the JavaScript simply failed to
+ * arrive. Without this the page would come back empty of everything the
+ * reveal system owns.
+ */
+const ENTRANCE_BOOT = `(function(){try{var d=document.documentElement,k="nx-entered";
+if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1");
+d.classList.add("entry-active","entry-hold");
+setTimeout(function(){d.classList.remove("entry-active","entry-hold");
+if(!d.dataset.nxReady){var s=document.createElement("style");
+s.textContent="[data-reveal]{opacity:1!important;transform:none!important;clip-path:none!important;filter:none!important}";
+document.head.appendChild(s)}},7000)}catch(e){}})()`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${interTight.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
       <body>
+        <script id="entrance-boot" dangerouslySetInnerHTML={{ __html: ENTRANCE_BOOT }} />
         <noscript>
           {/* Belt and braces for browsers without the `scripting` media feature. */}
           <style>{`[data-reveal]{opacity:1!important;transform:none!important;clip-path:none!important;filter:none!important}`}</style>
@@ -93,6 +122,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <Cursor />
         <GlassRuntime />
+        <LoadingExperience />
       </body>
     </html>
   );

@@ -23,12 +23,34 @@
 
 const VISIBLE = "is-visible";
 
+/**
+ * The entrance sequence holds reveals briefly, so the hero rises *as* the
+ * loading layer opens rather than finishing behind it.
+ *
+ * This is a hold, never a gate. Elements stay observed and queued the whole
+ * time, and the hold releases itself if the entrance never gets around to it,
+ * which keeps the guarantee above intact: content is never permanently
+ * invisible, whatever else breaks.
+ */
+let held = false;
+if (typeof document !== "undefined" && document.documentElement.classList.contains("entry-hold")) {
+  held = true;
+  setTimeout(releaseReveal, 6000);
+}
+
+export function releaseReveal() {
+  if (!held) return;
+  held = false;
+  queueSweep();
+}
+
 let observer: IntersectionObserver | null = null;
 let pending: Set<Element> | null = null;
 let raf = 0;
 let listening = false;
 
 function show(el: Element) {
+  if (held) return;
   el.classList.add(VISIBLE);
   pending?.delete(el);
   observer?.unobserve(el);

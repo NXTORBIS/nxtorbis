@@ -17,6 +17,12 @@
   will-change: transform;
 }
 
+/* Held until the entrance hands over, so the headline rises into the opening
+   layer rather than finishing behind it. */
+:global(html.entry-hold) .inner {
+  animation-play-state: paused;
+}
+
 @keyframes mt-rise {
   to {
     transform: translateY(0);

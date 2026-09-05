@@ -13,7 +13,7 @@ import styles from "./CrystalField.module.css";
  */
 
 type Hue = "gold" | "champagne" | "copper" | "amber" | "steel";
-type Variant = "hero" | "ambient" | "product" | "cta";
+type Variant = "hero" | "ambient" | "product" | "cta" | "entry";
 
 /* [mid, light, deep] — a warm-led gold/bronze metal palette. `steel` is the
    single cool counterpoint: polished metal needs one cold reflection to read
@@ -291,7 +291,12 @@ function Crystal({ id, c }: { id: string; c: CrystalSpec }) {
   );
 }
 
-function specs(variant: Variant, seed: number, hues: Hue[]): { crystals: CrystalSpec[]; dust: number } {
+function specs(
+  variant: Variant,
+  seed: number,
+  hues: Hue[],
+  compact: boolean,
+): { crystals: CrystalSpec[]; dust: number } {
   const r = rng(seed);
   const pick = (): [Hue, Hue, Hue] => [hues[0], hues[1 % hues.length], hues[2 % hues.length]];
   const alt = (): [Hue, Hue, Hue] => [hues[1 % hues.length], hues[2 % hues.length], hues[0]];
@@ -318,6 +323,47 @@ function specs(variant: Variant, seed: number, hues: Hue[]): { crystals: Crystal
       ],
     };
   }
+  if (variant === "entry") {
+    /* The entrance composition. Crystals sit around the edges of the frame and
+       never cross the centre, where the wordmark lives: a crystal over the
+       mark would make the identity the second thing you read. Some run off
+       the viewport on purpose, so the environment reads as larger than the
+       screen.
+
+       Phones get two objects rather than five. That is an art-direction
+       decision as much as a performance one - at 390px, five crystals is
+       clutter, not atmosphere. */
+    if (compact) {
+      /* A portrait phone sees only the middle of the viewBox: the field is
+         sliced to cover, so at 390x844 roughly x 390-810 survives and
+         everything either side is cropped away. These two sit inside that
+         band, above and below the mark rather than left and right of it. */
+      return {
+        dust: 14,
+        crystals: [
+          { x: 486, y: 206, w: 74, h: 218, rot: -18, hues: alt(), blur: 5, opacity: 0.4, depth: 0.5, shape: "shard" },
+          { x: 716, y: 704, w: 104, h: 236, rot: 32, hues: pick(), opacity: 0.8, depth: 1.2, shape: "wide" },
+        ],
+      };
+    }
+    return {
+      dust: 34,
+      /* Kept between roughly y 210 and y 800: a wide, short window slices the
+         viewBox vertically, and anything nearer the edges drops out of the
+         composition on those screens. */
+      crystals: [
+        // far, blurred - the back of the room
+        { x: 172, y: 238, w: 88, h: 250, rot: -22, hues: alt(), blur: 6, opacity: 0.38, depth: 0.4, shape: "shard" },
+        { x: 1048, y: 226, w: 70, h: 206, rot: 26, hues: pick(), blur: 5, opacity: 0.42, depth: 0.45, shape: "kite" },
+        // mid - the ones that actually read as optical glass
+        { x: 262, y: 690, w: 118, h: 262, rot: 52, hues: pick(), opacity: 0.82, depth: 1.1, shape: "skew" },
+        { x: 978, y: 648, w: 104, h: 236, rot: -34, hues: alt(), opacity: 0.86, depth: 1.25, shape: "wide" },
+        // near, out of focus, half out of frame
+        { x: 1152, y: 796, w: 150, h: 300, rot: 40, hues: pick(), blur: 10, opacity: 0.34, depth: 2.2, shape: "blunt" },
+      ],
+    };
+  }
+
   if (variant === "product") {
     return {
       dust: 26,
@@ -359,6 +405,7 @@ export function CrystalField({
   seed = 7,
   className,
   parallax = variant === "hero",
+  compact = false,
   id = "cf",
 }: {
   variant?: Variant;
@@ -366,10 +413,12 @@ export function CrystalField({
   seed?: number;
   className?: string;
   parallax?: boolean;
+  /** Trims the composition for small screens (entry variant). */
+  compact?: boolean;
   id?: string;
 }) {
   const ref = useRef<SVGSVGElement | null>(null);
-  const { crystals, dust } = specs(variant, seed, hues);
+  const { crystals, dust } = specs(variant, seed, hues, compact);
   const r = rng(seed * 31 + 7);
   const W = variant === "product" ? 600 : 1200;
   const H = variant === "product" ? 420 : 900;

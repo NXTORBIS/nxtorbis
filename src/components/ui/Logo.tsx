@@ -1,6 +1,11 @@
 import Image from "next/image";
 import { cx } from "@/lib/cx";
 
+/** The official wordmark and its true proportions (602 x 95). Exported so
+ *  every surface that draws the mark scales it identically. */
+export const LOGO_SRC = "/brand/nxtorbis-wordmark.png";
+export const LOGO_RATIO = 602 / 95;
+
 type Props = {
   /** Rendered height in px; width follows the official proportions (602 x 95). */
   height?: number;
@@ -13,10 +18,10 @@ type Props = {
  * transparent margins trimmed — never redrawn, recoloured or distorted.
  */
 export function Logo({ height = 22, className, priority = false }: Props) {
-  const width = Math.round((height * 602) / 95);
+  const width = Math.round(height * LOGO_RATIO);
   return (
     <Image
-      src="/brand/nxtorbis-wordmark.png"
+      src={LOGO_SRC}
       alt="NxtOrbis®"
       width={width}
       height={height}

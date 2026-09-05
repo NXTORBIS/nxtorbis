@@ -537,6 +537,25 @@ html {
   will-change: auto;
 }
 
+/* --------------------------------------------------------------------------
+   Entrance hold
+
+   While the entrance plays, the page beneath is held still and its own
+   arrival animations wait, so the hero performs as the layer opens rather
+   than playing out of sight behind it.
+
+   Both classes are set by the boot script in the layout and cleared by the
+   entrance runtime - and, failing that, by the boot script's own timer. There
+   is no path where either can persist.
+   -------------------------------------------------------------------------- */
+html.entry-hold {
+  overflow: hidden;
+}
+
+html.entry-hold .page-enter {
+  animation-play-state: paused;
+}
+
 /* Page transition (applied by app/template.tsx) */
 .page-enter {
   animation: page-enter var(--dur-med) var(--ease-out) both;
