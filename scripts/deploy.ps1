@@ -73,22 +73,36 @@ if ($remotes -notcontains "origin") {
 }
 
 # ------------------------------------------------------------------ backup --
+# Runs automatically before the first deploy, so the previous site is always
+# recoverable without anyone having to remember a separate step.
+function Ensure-Backup {
+    Step "Backing up the site that is live now"
+    Write-Host "    A browser sign-in may appear. That is GitHub asking who you are." -ForegroundColor Yellow
+
+    Invoke-Checked git @("fetch", "-q", "origin", "main", "gh-pages") "Fetching current branches"
+
+    $existing = & git ls-remote --heads $RepoUrl gh-pages-angular-backup
+    if ($LASTEXITCODE -ne 0) { throw "Could not reach GitHub. Check your sign-in and network." }
+
+    if ($existing) {
+        Ok "Backup already exists, leaving it untouched"
+    } else {
+        Invoke-Checked git @("push", "-q", $RepoUrl,
+            "refs/remotes/origin/gh-pages:refs/heads/gh-pages-angular-backup") "Backup of the live site"
+        Ok "Live site   -> branch gh-pages-angular-backup"
+        Invoke-Checked git @("push", "-q", $RepoUrl,
+            "refs/remotes/origin/main:refs/heads/angular-source-backup") "Backup of the old source"
+        Ok "Old source  -> branch angular-source-backup"
+    }
+}
+
 if ($Backup) {
-    Step "Fetching the current live branches"
-    Invoke-Checked git @("fetch", "origin", "main", "gh-pages") "git fetch"
-
-    Step "Creating backup branches"
-    Write-Host "    A browser sign-in may appear. That is Git Credential Manager." -ForegroundColor Yellow
-    Invoke-Checked git @("push", $RepoUrl,
-        "refs/remotes/origin/gh-pages:refs/heads/gh-pages-angular-backup") "Backup of gh-pages"
-    Ok "gh-pages       -> gh-pages-angular-backup"
-    Invoke-Checked git @("push", $RepoUrl,
-        "refs/remotes/origin/main:refs/heads/angular-source-backup") "Backup of main"
-    Ok "main           -> angular-source-backup"
-
-    Write-Host "`nBackups created. Now run:  .\scripts\deploy.ps1" -ForegroundColor Green
+    Ensure-Backup
+    Write-Host "`nBackup done. Run .\scripts\deploy.ps1 when you are ready to go live." -ForegroundColor Green
     return
 }
+
+if (-not $DryRun) { Ensure-Backup }
 
 # ------------------------------------------------------------------- build --
 Step "Building the static site"
