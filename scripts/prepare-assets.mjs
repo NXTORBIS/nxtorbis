@@ -9,10 +9,14 @@ import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 
 const SRC_LOGO = "public/brand/nxtorbis-logo-source.png";
-// Measured alpha bounds of the source wordmark (947x240): x 217-826, y 73-168.
-// Globe glyph occupies x 438-534 within the same rows.
-const LOGO_BOX = { left: 217, top: 73, width: 610, height: 96 };
-const GLOBE_BOX = { left: 436, top: 73, width: 100, height: 96 };
+// Measured from the source artwork (947x240). The wordmark's alpha bounds are
+// x 207-808, y 85-179. The globe glyph is a separate shape (it touches no
+// neighbouring letter) occupying exactly x 424-518, y 85-179 - a true square.
+// Crop it tightly: even 2px of slack pulls in a sliver of the adjacent T and R,
+// which shows up as a stray stroke in the favicon. Re-measure if the logo
+// file is ever replaced.
+const LOGO_BOX = { left: 207, top: 85, width: 602, height: 95 };
+const GLOBE_BOX = { left: 424, top: 85, width: 95, height: 95 };
 
 await mkdir("public/brand", { recursive: true });
 await mkdir("src/app", { recursive: true });
@@ -20,8 +24,28 @@ await mkdir("src/app", { recursive: true });
 // 1. Trimmed wordmark (white on transparent)
 await sharp(SRC_LOGO).extract(LOGO_BOX).png({ compressionLevel: 9 }).toFile("public/brand/nxtorbis-wordmark.png");
 
-// 2. Globe glyph -> square icons with generous padding, dark background for app icons
-const globe = await sharp(SRC_LOGO).extract(GLOBE_BOX).png().toBuffer();
+// 2. Globe glyph -> square icons with generous padding, dark background for app icons.
+// The globe is a disc, so its bounding box also contains the serif tip of the
+// adjacent T in the corners the disc does not fill. A rectangular crop cannot
+// exclude that: it shows up as a stray stroke in the icon. So keep only the
+// pixels of the glyph itself, found by flood-filling out from its centre.
+async function extractGlyph(box) {
+  const { data, info } = await sharp(SRC_LOGO).extract(box).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { width: w, height: h, channels: c } = info;
+  const keep = new Uint8Array(w * h);
+  const stack = [[Math.floor(w / 2), Math.floor(h / 2)]];
+  while (stack.length) {
+    const [x, y] = stack.pop();
+    if (x < 0 || y < 0 || x >= w || y >= h) continue;
+    const i = y * w + x;
+    if (keep[i] || data[i * c + 3] <= 24) continue;
+    keep[i] = 1;
+    stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+  for (let i = 0; i < w * h; i++) if (!keep[i]) data[i * c + 3] = 0;
+  return sharp(data, { raw: { width: w, height: h, channels: c } }).png().toBuffer();
+}
+const globe = await extractGlyph(GLOBE_BOX);
 async function icon(size, out, { bg = "#0a0806", pad = 0.18 } = {}) {
   const inner = Math.round(size * (1 - pad * 2));
   const g = await sharp(globe).resize({ width: inner, height: inner, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();

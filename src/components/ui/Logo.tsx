@@ -2,7 +2,7 @@ import Image from "next/image";
 import { cx } from "@/lib/cx";
 
 type Props = {
-  /** Rendered height in px; width follows the official proportions (610 × 96). */
+  /** Rendered height in px; width follows the official proportions (602 x 95). */
   height?: number;
   className?: string;
   priority?: boolean;
@@ -13,7 +13,7 @@ type Props = {
  * transparent margins trimmed — never redrawn, recoloured or distorted.
  */
 export function Logo({ height = 22, className, priority = false }: Props) {
-  const width = Math.round((height * 610) / 96);
+  const width = Math.round((height * 602) / 95);
   return (
     <Image
       src="/brand/nxtorbis-wordmark.png"
