@@ -89,6 +89,11 @@ export function ContactForm() {
 
   const disabled = status === "submitting" || status === "sent";
 
+  // Completion is derived from the existing validator, so the readout can never
+  // disagree with what submitting would actually do.
+  const liveErrors = validate(values);
+  const complete = (["name", "email", "service", "message"] as const).filter((k) => !liveErrors[k]).length;
+
   if (status === "sent") {
     return (
       <div className={cx("glass", "glass--l3", "glass--panel", styles.success)} role="status" aria-live="polite">
@@ -103,6 +108,16 @@ export function ContactForm() {
 
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate aria-describedby={`${id}-note`}>
+      <div className={styles.head} aria-hidden="true">
+        <span className={styles.headLabel}>New enquiry</span>
+        <span className={styles.headTrack}>
+          <span className={styles.headFill} style={{ transform: `scaleX(${complete / 4})` }} />
+        </span>
+        <span className={styles.headCount}>
+          {String(complete).padStart(2, "0")} / 04
+        </span>
+      </div>
+
       {context && (
         <p className={cx("glass", "glass--l1", "glass--pill", styles.context)}>
           <span className="num">CONTEXT</span>
@@ -111,7 +126,7 @@ export function ContactForm() {
       )}
 
       <div className={styles.row}>
-        <Field id={`${id}-name`} label="Full name" error={touched.name ? errors.name : undefined}>
+        <Field id={`${id}-name`} index="01" label="Full name" error={touched.name ? errors.name : undefined} valid={touched.name && !errors.name && values.name.length > 0}>
           <input
             id={`${id}-name`}
             name="name"
@@ -128,7 +143,7 @@ export function ContactForm() {
             placeholder="Your name"
           />
         </Field>
-        <Field id={`${id}-email`} label="Email address" error={touched.email ? errors.email : undefined}>
+        <Field id={`${id}-email`} index="02" label="Email address" error={touched.email ? errors.email : undefined} valid={touched.email && !errors.email && values.email.length > 0}>
           <input
             id={`${id}-email`}
             name="email"
@@ -148,7 +163,7 @@ export function ContactForm() {
         </Field>
       </div>
 
-      <Field id={`${id}-service`} label="Service" error={touched.service ? errors.service : undefined}>
+      <Field id={`${id}-service`} index="03" label="Service" error={touched.service ? errors.service : undefined} valid={Boolean(values.service)}>
         <GlassSelect
           id={`${id}-service`}
           name="service"
@@ -167,7 +182,7 @@ export function ContactForm() {
         />
       </Field>
 
-      <Field id={`${id}-message`} label="Message" error={touched.message ? errors.message : undefined} hint="What are you building, for whom, and what does success look like?">
+      <Field id={`${id}-message`} index="04" label="Message" error={touched.message ? errors.message : undefined} valid={touched.message && !errors.message && values.message.length > 0} hint="What are you building, for whom, and what does success look like?">
         <textarea
           id={`${id}-message`}
           name="message"
@@ -223,23 +238,55 @@ export function ContactForm() {
 
 function Field({
   id,
+  index,
   label,
   error,
   hint,
+  valid,
   children,
 }: {
   id: string;
+  index: string;
   label: string;
   error?: string;
   hint?: string;
+  valid?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <div className={cx(styles.field, error && styles.fieldError)}>
-      <label htmlFor={id} className={styles.label}>
-        {label}
-      </label>
-      {children}
+    <div className={cx(styles.field, error && styles.fieldError, valid && styles.fieldValid)}>
+      <div className={styles.fieldHead}>
+        <span className={styles.fieldIndex} aria-hidden="true">
+          {index}
+        </span>
+        <label htmlFor={id} className={styles.label}>
+          {label}
+        </label>
+        <span className={styles.fieldState} aria-hidden="true">
+          {error ? (
+            <svg viewBox="0 0 12 12" width="12" height="12" fill="none">
+              <path d="M6 2.5v4M6 9h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          ) : valid ? (
+            <svg viewBox="0 0 12 12" width="12" height="12" fill="none">
+              <path d="m2.5 6.5 2.2 2.2L9.5 3.9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ) : null}
+        </span>
+      </div>
+
+      <div className={styles.control}>
+        {children}
+        {/* corner ticks + scan line, drawn only while the control is engaged */}
+        <span className={styles.ticks} aria-hidden="true">
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className={styles.scan} aria-hidden="true" />
+      </div>
+
       {error ? (
         <p id={`${id}-error`} className={styles.error} role="alert">
           {error}

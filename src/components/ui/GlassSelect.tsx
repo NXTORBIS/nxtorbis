@@ -112,7 +112,7 @@ export function GlassSelect({ id, value, options, placeholder, onChange, onBlur,
         disabled={disabled}
         onClick={() => setOpen((v) => !v)}
         onKeyDown={onTriggerKey}
-        className={cx("glass", "glass--l2", "glass--control", styles.trigger, !value && styles.placeholder, invalid && styles.invalid, open && styles.open)}
+        className={cx(styles.trigger, !value && styles.placeholder, invalid && styles.invalid, open && styles.open)}
       >
         <span className={styles.value}>{value || placeholder}</span>
         <span className={cx(styles.chev, open && styles.chevOpen)} aria-hidden="true">

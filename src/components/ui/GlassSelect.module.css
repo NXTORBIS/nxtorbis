@@ -3,41 +3,50 @@
 }
 
 .trigger {
+  /* Matches ContactForm's .input exactly: same tint, blur, edge and depth,
+     so the four controls read as one machined surface. */
   width: 100%;
   min-height: 3.25rem;
+  padding: 0.9rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: 0.85rem 1rem;
   text-align: left;
-  color: var(--text);
   font-size: 1rem;
+  color: var(--text);
   cursor: pointer;
+  border-radius: 0;
+  background-color: var(--glass-tint-2);
+  backdrop-filter: blur(var(--glass-blur-2)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter: blur(var(--glass-blur-2)) saturate(var(--glass-sat));
+  border: 1px solid transparent;
+  border-image: linear-gradient(to bottom, var(--glass-edge-top), var(--glass-edge-mid) 45%, var(--glass-edge-base)) 1;
+  box-shadow: var(--glass-inset);
   transition:
-    background-color var(--glass-t) var(--glass-ease),
-    box-shadow var(--dur-fast) var(--ease-out),
-    color var(--dur-fast) var(--ease-out);
+    border-image var(--ix-quick) var(--ix-move),
+    background-color var(--glass-t) var(--ix-move),
+    box-shadow var(--ix-quick) var(--ix-move);
+}
+
+.trigger:hover:not(:disabled) {
+  background-color: var(--glass-tint-3);
 }
 
 .placeholder .value {
   color: var(--text-3);
 }
 
-.trigger:focus-visible {
+.trigger:focus-visible,
+.open {
   outline: none;
+  border-image: linear-gradient(to bottom, rgba(255, 226, 178, 0.85), rgba(237, 177, 102, 0.65) 50%, rgba(237, 177, 102, 0.3)) 1;
   box-shadow: var(--glass-inset), 0 0 0 3px var(--accent-muted);
+  background-color: var(--glass-tint-3);
 }
 
-.trigger:focus-visible::before,
-.open::before {
-  --glass-edge-mid: rgba(237, 177, 102, 0.55);
-  --glass-edge-top: rgba(255, 226, 178, 0.75);
-}
-
-.invalid::before {
-  --glass-edge-mid: rgba(255, 123, 116, 0.55);
-  --glass-edge-top: rgba(255, 168, 162, 0.7);
+.invalid {
+  border-image: linear-gradient(to bottom, rgba(255, 168, 162, 0.85), rgba(255, 123, 116, 0.6) 55%, rgba(255, 123, 116, 0.28)) 1;
 }
 
 .trigger:disabled {
@@ -74,6 +83,7 @@
   top: calc(100% + 0.5rem);
   left: 0;
   right: 0;
+  border-radius: 10px;
   max-height: 17rem;
   overflow-y: auto;
   padding: 0.4rem;
