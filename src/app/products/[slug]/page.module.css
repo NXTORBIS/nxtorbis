@@ -1,0 +1,125 @@
+.tag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding: 0.45rem 0.8rem;
+  border: 0;
+}
+
+.techs {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.techs span {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  padding: 0.45rem 0.8rem;
+  border: 0;
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-7);
+}
+
+.copy {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.copy h2 {
+  max-width: 16ch;
+}
+
+.facts {
+  display: grid;
+  gap: var(--space-4);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-5);
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: var(--space-3);
+  align-items: baseline;
+}
+
+.facts dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.facts dd {
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.inlineLink:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.next {
+  border-top: 1px solid var(--border);
+}
+
+.nextLink {
+  display: grid;
+  gap: var(--space-3);
+  padding-block: clamp(3rem, 6vw, 5rem);
+  color: var(--text);
+}
+
+.nextName {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.nextName svg {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.nextLink:hover .nextName svg {
+  transform: translateX(6px);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 7fr 5fr;
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+
+  .visual {
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+  }
+}

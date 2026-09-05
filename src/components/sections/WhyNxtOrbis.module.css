@@ -1,0 +1,132 @@
+.section {
+  border-top: 1px solid var(--border);
+}
+
+.grid {
+  display: grid;
+  gap: clamp(3rem, 6vw, 5rem);
+}
+
+.statement {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.title {
+  max-width: 13ch;
+}
+
+.activeBox {
+  display: none;
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  grid-template-columns: auto 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.activeNum {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+}
+
+.activeBody {
+  font-size: var(--fs-lead);
+  color: var(--text);
+  max-width: 30ch;
+  animation: fade-in var(--dur-med) var(--ease-out) both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.list {
+  display: grid;
+  border-top: 1px solid var(--border);
+}
+
+.item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 0.35rem var(--space-3);
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  color: var(--text-2);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.item:hover,
+.itemActive {
+  color: var(--text);
+}
+
+.itemNum {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  padding-top: 0.45rem;
+}
+
+.itemActive .itemNum {
+  color: var(--accent);
+}
+
+.itemTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2.2vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+.itemActive .itemTitle {
+  transform: translateX(6px);
+}
+
+.itemBody {
+  grid-column: 2;
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 6fr 6fr;
+    align-items: start;
+  }
+
+  .statement {
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+  }
+
+  .activeBox {
+    display: grid;
+  }
+
+  .itemBody {
+    display: none;
+  }
+
+  .item {
+    padding: 1.75rem 0;
+  }
+}

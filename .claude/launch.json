@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "nxtorbis-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "nxtorbis-static",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "serve@latest", "out", "-l", "3001"],
+      "port": 3001
+    }
+  ]
+}
