@@ -69,6 +69,42 @@ function outline(shape: Shape, w: number, h: number): number[][] {
   }
 }
 
+/**
+ * Per-crystal drift. Every crystal gets its own amplitude, direction, period,
+ * rotation and phase, so no two move alike. Amplitude follows depth: the
+ * midground travels furthest, the background barely stirs. Periods run long
+ * (9-26s) so the motion reads as suspension rather than animation.
+ *
+ * Values are derived from the field's seed, so the server and the client
+ * always agree and the composition stays art-directed rather than random.
+ */
+function driftVars(depth: number, r: () => number): React.CSSProperties {
+  // Travel bands, in px: foreground 4-8, midground 6-12, background 2-5.
+  const lo = depth >= 1.8 ? 4 : depth >= 1.0 ? 6 : 2;
+  const span = depth >= 1.8 ? 4 : depth >= 1.0 ? 6 : 3;
+  const ax = lo + r() * span;
+  const ay = lo + r() * span;
+  const sx = r() > 0.5 ? 1 : -1;
+  const sy = r() > 0.5 ? 1 : -1;
+  const rot = 0.7 + r() * 1.7;                    // stays well under 3 degrees
+  const sr = r() > 0.5 ? 1 : -1;
+  // larger, nearer crystals move most slowly
+  const dur = 9 + r() * 9 + (depth >= 1.6 ? 8 : 0);
+  const delay = -(r() * dur);                      // desynchronised start
+  const eases = ["cubic-bezier(.45,.05,.55,.95)", "cubic-bezier(.37,0,.63,1)", "cubic-bezier(.5,.1,.5,.9)"];
+  return {
+    ["--fx1" as string]: `${(-ax * sx).toFixed(2)}px`,
+    ["--fy1" as string]: `${(-ay * sy).toFixed(2)}px`,
+    ["--fx2" as string]: `${(ax * sx * (0.6 + r() * 0.4)).toFixed(2)}px`,
+    ["--fy2" as string]: `${(ay * sy * (0.6 + r() * 0.4)).toFixed(2)}px`,
+    ["--fr1" as string]: `${(-rot * sr).toFixed(2)}deg`,
+    ["--fr2" as string]: `${(rot * sr).toFixed(2)}deg`,
+    ["--fdur" as string]: `${dur.toFixed(1)}s`,
+    ["--fdelay" as string]: `${delay.toFixed(1)}s`,
+    ["--fease" as string]: eases[Math.floor(r() * eases.length) % eases.length],
+  } as React.CSSProperties;
+}
+
 function Crystal({ id, c }: { id: string; c: CrystalSpec }) {
   const { w, h } = c;
   const [T, B, L, R, F] = outline(c.shape ?? "kite", w, h);
@@ -220,7 +256,7 @@ function Crystal({ id, c }: { id: string; c: CrystalSpec }) {
           <rect x={-w} y={-h} width={w * 2} height={h * 2} fill={`url(#${id}-env)`} transform={`rotate(-26) translate(${-w * 0.05} 0)`} />
         </g>
         <ellipse cx={-w * 0.06} cy={-h * 0.14} rx={w * 0.42} ry={h * 0.3} fill={`url(#${id}-bloom)`} />
-        <polygon points={silhouette} fill={`url(#${id}-fresnel)`} />
+        <polygon points={silhouette} fill={`url(#${id}-fresnel)`} style={{ opacity: "calc(0.55 + var(--near, 0) * 0.75)" }} />
         {/* soft hot spots near the upper-left light and the warm base */}
         <ellipse cx={-w * 0.22} cy={-h * 0.2} rx={w * 0.16} ry={h * 0.06} fill="#ffffff" opacity="0.5" filter={`url(#${id}-hot)`} transform={`rotate(-32 ${-w * 0.22} ${-h * 0.2})`} />
         <ellipse cx={w * 0.1} cy={h * 0.36} rx={w * 0.12} ry={h * 0.03} fill={RIM_HOT} opacity="0.45" filter={`url(#${id}-hot)`} transform={`rotate(-20 ${w * 0.1} ${h * 0.36})`} />
@@ -241,8 +277,8 @@ function Crystal({ id, c }: { id: string; c: CrystalSpec }) {
       <polyline points={p([L, B, R])} fill="none" stroke={`url(#${id}-rim)`} strokeWidth="1.5" />
 
       {/* cool specular edges on the upper silhouette + front ridge */}
-      <polyline points={p([T, F, B])} fill="none" stroke={`url(#${id}-ridge)`} strokeWidth="1.6" />
-      <polyline points={p([L, T, R])} fill="none" stroke="#ffffff" strokeOpacity="0.85" strokeWidth="1" />
+      <polyline points={p([T, F, B])} fill="none" stroke={`url(#${id}-ridge)`} strokeWidth="1.6" style={{ opacity: "calc(0.82 + var(--near, 0) * 0.18)" }} />
+      <polyline points={p([L, T, R])} fill="none" stroke="#ffffff" strokeWidth="1" style={{ strokeOpacity: "calc(0.72 + var(--near, 0) * 0.28)" }} />
       <line x1={L[0]} y1={L[1]} x2={F[0]} y2={F[1]} stroke="#ffffff" strokeOpacity="0.55" strokeWidth="0.9" />
       <line x1={F[0]} y1={F[1]} x2={R[0]} y2={R[1]} stroke="#ffffff" strokeOpacity="0.95" strokeWidth="1" />
 
@@ -351,6 +387,17 @@ export function CrystalField({
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
+    // Crystals carry their centre in viewBox units, so proximity is pure maths:
+    // one matrix inversion per frame, then a distance check each. No layout reads.
+    const layers = Array.from(el.querySelectorAll<SVGGElement>("g[data-cx]")).map((g) => ({
+      g,
+      x: Number(g.dataset.cx),
+      y: Number(g.dataset.cy),
+      near: 0,
+    }));
+    const pt = el.createSVGPoint();
+    const REACH = 320; // viewBox units
+
     let raf = 0;
     const onMove = (e: PointerEvent) => {
       cancelAnimationFrame(raf);
@@ -359,16 +406,44 @@ export function CrystalField({
         const my = (e.clientY / window.innerHeight - 0.5) * 2;
         el.style.setProperty("--mx", mx.toFixed(3));
         el.style.setProperty("--my", my.toFixed(3));
+
+        const ctm = el.getScreenCTM();
+        if (!ctm) return;
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const local = pt.matrixTransform(ctm.inverse());
+
+        for (const l of layers) {
+          const d = Math.hypot(local.x - l.x, local.y - l.y);
+          // ease the falloff so the response arrives gradually, never snaps
+          const t = Math.max(0, 1 - d / REACH);
+          const target = t * t;
+          if (Math.abs(target - l.near) > 0.004) {
+            l.near = target;
+            l.g.style.setProperty("--near", target.toFixed(3));
+          }
+        }
       });
     };
+
+    const onLeave = () => {
+      for (const l of layers) {
+        l.near = 0;
+        l.g.style.setProperty("--near", "0");
+      }
+    };
+
     window.addEventListener("pointermove", onMove, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onLeave);
     return () => {
       window.removeEventListener("pointermove", onMove);
+      document.documentElement.removeEventListener("pointerleave", onLeave);
       cancelAnimationFrame(raf);
     };
   }, [parallax]);
 
   const sorted = [...crystals].sort((a, b) => a.depth - b.depth);
+  const dr = rng(seed * 7919 + 13);
 
   return (
     <svg
@@ -423,7 +498,13 @@ export function CrystalField({
 
       {/* crystals, back to front, each on its own parallax depth */}
       {sorted.map((c, i) => (
-        <g key={i} className={styles.layer} style={{ ["--depth" as string]: c.depth, ["--i" as string]: i } as React.CSSProperties}>
+        <g
+          key={i}
+          className={styles.layer}
+          data-cx={c.x}
+          data-cy={c.y}
+          style={{ ["--depth" as string]: c.depth, ...driftVars(c.depth, dr) } as React.CSSProperties}
+        >
           <Crystal id={`${id}-c${i}`} c={c} />
         </g>
       ))}
