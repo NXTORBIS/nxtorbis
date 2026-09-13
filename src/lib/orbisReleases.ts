@@ -22,8 +22,12 @@ import {
  * platform's verified default (see content/orbis).
  */
 
+export type OrbisBuildKind = "installer" | "portable" | "archive";
+
 export type OrbisBuild = {
   platform: OrbisPlatform;
+  /** Installer, portable (runs without installing), or a plain archive. */
+  kind: OrbisBuildKind;
   arch: string | null;
   fileName: string;
   size: number;
@@ -71,12 +75,37 @@ const PLATFORM_PATTERNS: [OrbisPlatform, RegExp][] = [
   ["macos", /(mac|darwin|osx).*\.zip$/i],
   ["linux", /\.(appimage|deb|rpm|snap|flatpak)$/i],
   ["linux", /linux.*\.(tar\.gz|tar\.xz|zip)$/i],
+  ["windows", /(portable|windows|win32|win64|win).*\.zip$/i],
 ];
 
 function platformOf(fileName: string): OrbisPlatform | null {
   if (/\.(blockmap|yml|yaml|sig|asc)$/i.test(fileName)) return null;
   for (const [platform, pattern] of PLATFORM_PATTERNS) if (pattern.test(fileName)) return platform;
   return null;
+}
+
+function kindOf(fileName: string, platform: OrbisPlatform): OrbisBuildKind {
+  if (/portable/i.test(fileName) || (platform === "windows" && /\.zip$/i.test(fileName))) return "portable";
+  if (/\.(exe|msi|msix|appx|dmg|pkg|deb|rpm|appimage|snap|flatpak)$/i.test(fileName)) return "installer";
+  return "archive";
+}
+
+const KIND_ORDER: Record<OrbisBuildKind, number> = { installer: 0, portable: 1, archive: 2 };
+
+function extensionOf(fileName: string): string {
+  const m = /\.(tar\.gz|tar\.xz|[a-z0-9]+)$/i.exec(fileName);
+  return m ? `.${m[1].toLowerCase()}` : "";
+}
+
+/** "Installer (.exe)", "Portable (.zip)" — plus the architecture when siblings differ by it. */
+export function buildLabel(build: OrbisBuild, siblings: OrbisBuild[]): string {
+  const kinds = new Set(siblings.map((s) => s.kind));
+  const arches = new Set(siblings.filter((s) => s.kind === build.kind).map((s) => s.arch));
+  const kind = build.kind === "installer" ? "Installer" : build.kind === "portable" ? "Portable" : "Archive";
+  const parts: string[] = [];
+  if (kinds.size > 1 || siblings.length === 1) parts.push(`${kind} (${extensionOf(build.fileName)})`);
+  if (arches.size > 1) parts.push(archLabel(build.platform, build.arch) ?? "");
+  return parts.filter(Boolean).join(" · ") || build.fileName;
 }
 
 function archOf(fileName: string, platform: OrbisPlatform): string | null {
@@ -186,6 +215,7 @@ function normalize(raw: GithubRelease[]): OrbisRelease[] {
         const digest = asset.digest ? /^sha256:([0-9a-f]{64})$/i.exec(asset.digest) : null;
         const build: OrbisBuild = {
           platform,
+          kind: kindOf(asset.name, platform),
           arch: archOf(asset.name, platform),
           fileName: asset.name,
           size: asset.size,
@@ -194,6 +224,7 @@ function normalize(raw: GithubRelease[]): OrbisRelease[] {
         };
         if (isTrustedBuild(build)) builds.push(build);
       }
+      builds.sort((a, b) => KIND_ORDER[a.kind] - KIND_ORDER[b.kind]);
       return {
         tag: r.tag_name,
         version: r.tag_name.replace(/^v/i, ""),

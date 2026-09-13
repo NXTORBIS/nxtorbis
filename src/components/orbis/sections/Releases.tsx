@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { orbisCopy, orbisPlatforms, orbisReleasesUrl, orbisRequirements } from "@/content/orbis";
 import {
   archLabel,
+  buildLabel,
   formatDate,
   formatSize,
   releaseSummary,
@@ -124,7 +125,7 @@ export function OrbisLatestRelease() {
                 </div>
               )}
               {latest.builds.map((b) => {
-                const prefix = latest.builds.length > 1 ? `${orbisPlatforms[b.platform].label} ` : "";
+                const prefix = latest.builds.length > 1 ? `${buildLabel(b, latest.builds)} · ` : "";
                 const arch = archLabel(b.platform, b.arch);
                 return (
                   <Fragment key={b.fileName}>

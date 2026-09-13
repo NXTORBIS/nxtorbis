@@ -82,6 +82,19 @@ export const orbisInstallGuide: Partial<Record<OrbisPlatform, { title: string; b
   ],
 };
 
+/** Steps for the portable download, shown only when a portable build is published. */
+export const orbisPortableGuide: Partial<Record<OrbisPlatform, { title: string; body: string }[]>> = {
+  windows: [
+    { title: "Extract the zip", body: "Unzip the portable download wherever you like. Nothing is installed." },
+    {
+      title: "Run Orbis.exe",
+      // Orbis-0.1.0-Portable.zip contains win-unpacked/Orbis.exe; the executable is not code-signed.
+      body: "Open the win-unpacked folder and run Orbis.exe. It isn’t code-signed yet, so Windows SmartScreen may show a notice — select More info, then Run anyway.",
+    },
+    { title: "Start ORION", body: "This release talks only to ORION on your own computer, so make sure ORION is running before you open Orbis." },
+  ],
+};
+
 export type OrbisCapabilityId = "ai" | "workspace" | "memory" | "files" | "tools" | "learning" | "voice";
 
 export const orbisCopy = {
