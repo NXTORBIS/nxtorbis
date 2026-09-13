@@ -134,7 +134,11 @@ await sharp(orbisOg).png({ compressionLevel: 9 }).toFile("public/orbis/og-orbis.
   const keyed = await sharp(data, { raw: info }).png().toBuffer();
   const trimmedLogo = await sharp(keyed).trim({ threshold: 1 }).png({ compressionLevel: 9 }).toBuffer({ resolveWithObject: true });
   await sharp(trimmedLogo.data).toFile("public/orbis/orbis-logo.png");
-  console.log("orbis-logo.png " + trimmedLogo.info.width + "x" + trimmedLogo.info.height);
+  // A small copy for the logo in running text (components/ui/OrbisLogo), so a
+  // nav link doesn't send the full artwork. 100px tall stays sharp for text up
+  // to about 50px on 2x screens; headings get the full file through srcset.
+  const small = await sharp(trimmedLogo.data).resize({ height: 100 }).png({ compressionLevel: 9 }).toFile("public/orbis/orbis-logo-sm.png");
+  console.log(`orbis-logo.png ${trimmedLogo.info.width}x${trimmedLogo.info.height}, orbis-logo-sm.png ${small.width}x${small.height}`);
 }
 
 console.log(JSON.stringify({ dark: [dark.width, dark.height], light: [light.width, light.height], ring: [ring.width, ring.height] }));

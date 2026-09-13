@@ -4,6 +4,7 @@ import { useLayoutEffect, useState, type CSSProperties } from "react";
 import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
 import { Button } from "@/components/ui/Button";
+import { withOrbisLogo } from "@/components/ui/OrbisLogo";
 import { orbisCopy, orbisPlatforms } from "@/content/orbis";
 import { useOrbisReleases } from "@/lib/orbisReleases";
 import { OrbSlot } from "../orb/OrbStage";
@@ -61,11 +62,12 @@ export function OrbisHero() {
 
         <div className={cx(styles.heroActions, styles.introGroup)}>
           <div className={styles.actions} style={delay(1650)}>
-            <Button variant="primary" size="lg" intensity="hero" arrow onClick={goToDownload}>
-              {orbisCopy.hero.primary}
+            {/* Glass, not the cream primary: the Orbis logo is white artwork made for dark grounds. */}
+            <Button variant="secondary" size="lg" intensity="hero" arrow onClick={goToDownload}>
+              {withOrbisLogo(orbisCopy.hero.primary)}
             </Button>
             <Button variant="ghost" size="lg" arrow onClick={() => scrollToId("intro")}>
-              {orbisCopy.hero.secondary}
+              {withOrbisLogo(orbisCopy.hero.secondary)}
             </Button>
           </div>
           <p className={styles.platforms} style={delay(1780)} aria-live="polite">
@@ -84,7 +86,7 @@ export function OrbisIntro() {
       <div className={cx("container", styles.introGrid)}>
         <div className={styles.introText}>
           <Reveal as="h2" id="orbis-intro-title" className={styles.statement} variant="clip">
-            {orbisCopy.intro.heading}
+            {withOrbisLogo(orbisCopy.intro.heading, { display: true })}
           </Reveal>
           <Reveal as="p" className={styles.lead} delay={120}>
             {orbisCopy.intro.support}

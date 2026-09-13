@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
+import { withOrbisLogo } from "@/components/ui/OrbisLogo";
 import { orbisCapabilities, orbisCopy, type OrbisCapabilityId } from "@/content/orbis";
 import { OrbSlot, useOrb } from "../orb/OrbStage";
 import styles from "../Orbis.module.css";
@@ -108,7 +109,7 @@ export function OrbisConnected() {
           {current ? (
             <>
               <strong>{current.label}</strong>
-              {current.description}
+              {withOrbisLogo(current.description)}
             </>
           ) : (
             "Select a capability to see how it connects."

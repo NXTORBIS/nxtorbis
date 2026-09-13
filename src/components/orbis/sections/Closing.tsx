@@ -3,6 +3,7 @@
 import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
 import { Button } from "@/components/ui/Button";
+import { withOrbisLogo } from "@/components/ui/OrbisLogo";
 import { orbisCopy } from "@/content/orbis";
 import { OrbSlot } from "../orb/OrbStage";
 import { goToDownload } from "../shared";
@@ -17,7 +18,7 @@ export function OrbisEcosystem() {
           {orbisCopy.label}
         </Reveal>
         <Reveal as="h2" id="orbis-eco-title" className={cx(styles.sectionTitle, styles.ecoTitle)}>
-          {orbisCopy.ecosystem.heading}
+          {withOrbisLogo(orbisCopy.ecosystem.heading, { display: true })}
         </Reveal>
         <Reveal as="p" className={cx(styles.muted, styles.center)} delay={100}>
           {orbisCopy.ecosystem.text}
@@ -44,14 +45,15 @@ export function OrbisFinal() {
           <OrbSlot state="final" />
         </div>
         <Reveal as="h2" id="orbis-final-title" className={styles.statement}>
-          {orbisCopy.final.heading}
+          {withOrbisLogo(orbisCopy.final.heading, { display: true })}
         </Reveal>
         <Reveal as="p" className={cx(styles.lead, styles.center)} delay={100}>
           {orbisCopy.final.support}
         </Reveal>
         <Reveal className={styles.actions} delay={180}>
-          <Button variant="primary" size="lg" intensity="hero" arrow onClick={goToDownload}>
-            {orbisCopy.hero.primary}
+          {/* Glass, not the cream primary: the Orbis logo is white artwork made for dark grounds. */}
+          <Button variant="secondary" size="lg" intensity="hero" arrow onClick={goToDownload}>
+            {withOrbisLogo(orbisCopy.hero.primary)}
           </Button>
           <Button href="/" variant="ghost" size="lg" arrow>
             {orbisCopy.ecosystem.cta}

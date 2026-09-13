@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
+import { withOrbisLogo } from "@/components/ui/OrbisLogo";
 import { orbisCapabilities, orbisCopy, orbisFeatures, type OrbisCapabilityId } from "@/content/orbis";
 import { OrbSlot } from "../orb/OrbStage";
 import { useInView } from "../shared";
@@ -44,7 +45,7 @@ function FeatureComposition({ id, title, copy, index }: { id: OrbisCapabilityId;
             {title}
           </Reveal>
           <Reveal as="p" className={styles.featureCopy} delay={120}>
-            {copy}
+            {withOrbisLogo(copy)}
           </Reveal>
         </div>
         <div ref={ref} className={styles.featureStage}>
@@ -194,7 +195,7 @@ export function OrbisMore() {
           </ul>
         </div>
         <Reveal as="p" className={cx(styles.lead, styles.center)} delay={120}>
-          {orbisCopy.more.text}
+          {withOrbisLogo(orbisCopy.more.text)}
         </Reveal>
       </div>
     </section>

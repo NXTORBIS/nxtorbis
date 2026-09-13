@@ -4,6 +4,7 @@ import { Fragment, useState, type KeyboardEvent } from "react";
 import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
 import { Button } from "@/components/ui/Button";
+import { OrbisLogo, withOrbisLogo } from "@/components/ui/OrbisLogo";
 import { orbisCopy, orbisPlatforms, orbisReleasesUrl, orbisRequirements } from "@/content/orbis";
 import {
   archLabel,
@@ -24,11 +25,11 @@ function InlineText({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         part.startsWith("**") ? (
-          <strong key={i}>{part.slice(2, -2)}</strong>
+          <strong key={i}>{withOrbisLogo(part.slice(2, -2))}</strong>
         ) : part.startsWith("`") ? (
           <code key={i}>{part.slice(1, -1)}</code>
         ) : (
-          <Fragment key={i}>{part}</Fragment>
+          <Fragment key={i}>{withOrbisLogo(part)}</Fragment>
         ),
       )}
     </>
@@ -95,22 +96,24 @@ export function OrbisLatestRelease() {
     <section id="latest" className={cx(styles.section, styles.latest)} aria-labelledby="orbis-latest-title">
       <div className="container">
         <Reveal as="h2" id="orbis-latest-title" className={cx(styles.sectionTitle, styles.center)}>
-          {orbisCopy.latest.heading}
+          {withOrbisLogo(orbisCopy.latest.heading, { display: true })}
         </Reveal>
 
         {state.status === "loading" && <p className={cx(styles.softNote, styles.center, styles.spaced)}>Loading the latest release…</p>}
         {state.status === "error" && <ReleaseError message={state.message} onRetry={retry} />}
         {state.status === "empty" && (
           <div className={styles.panelBox}>
-            <p className={styles.statusTitle}>{orbisCopy.empty.heading}</p>
-            <p className={styles.statusText}>{orbisCopy.latest.empty}</p>
+            <p className={styles.statusTitle}>{withOrbisLogo(orbisCopy.empty.heading)}</p>
+            <p className={styles.statusText}>{withOrbisLogo(orbisCopy.latest.empty)}</p>
           </div>
         )}
 
         {latest && (
           <Reveal className={styles.latestCard} variant="glass">
             <p className="eyebrow">Latest release</p>
-            <h3 className={styles.latestVersion}>Orbis {latest.version}</h3>
+            <h3 className={styles.latestVersion}>
+              <OrbisLogo display /> {latest.version}
+            </h3>
             <dl className={cx(styles.facts, styles.latestFacts)}>
               <div>
                 <dt>Released</dt>
@@ -192,7 +195,9 @@ export function OrbisReleaseHistory() {
               <Reveal as="li" key={r.tag} className={styles.timelineItem}>
                 <span className={styles.timelineDot} aria-hidden="true" />
                 <div className={styles.timelineHead}>
-                  <h3 className={styles.timelineVersion}>Orbis {r.version}</h3>
+                  <h3 className={styles.timelineVersion}>
+                    <OrbisLogo /> {r.version}
+                  </h3>
                   <time dateTime={r.publishedAt}>{formatDate(r.publishedAt)}</time>
                 </div>
                 {summary && (
@@ -278,12 +283,12 @@ export function OrbisRequirements() {
               id="orbis-req-panel"
               {...(tabs ? { role: "tabpanel", "aria-labelledby": `orbis-req-tab-${current}` } : {})}
             >
-              <h3 className={styles.reqTitle}>{orbisPlatforms[current].title}</h3>
+              <h3 className={styles.reqTitle}>{withOrbisLogo(orbisPlatforms[current].title)}</h3>
               <dl className={styles.reqList}>
                 {(orbisRequirements[current] ?? []).map((r) => (
                   <div key={r.label}>
                     <dt>{r.label}</dt>
-                    <dd>{r.value}</dd>
+                    <dd>{withOrbisLogo(r.value)}</dd>
                   </div>
                 ))}
               </dl>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { company, nav, products, services } from "@/content/site";
 import { orbisReleasesUrl } from "@/content/orbis";
 import { Logo } from "@/components/ui/Logo";
+import { OrbisLogo, withOrbisLogo } from "@/components/ui/OrbisLogo";
 import { ArrowRight, ArrowUpRight } from "@/components/ui/Icons";
 import styles from "./Footer.module.css";
 
@@ -29,7 +30,7 @@ export function Footer() {
                 {nav.map((n) => (
                   <li key={n.href}>
                     <Link href={n.href} className={styles.link}>
-                      {n.label}
+                      {withOrbisLogo(n.label)}
                     </Link>
                   </li>
                 ))}
@@ -60,11 +61,13 @@ export function Footer() {
               </ul>
             </div>
             <div className={styles.col}>
-              <h2 className={styles.colTitle}>Orbis</h2>
+              <h2 className={styles.colTitle}>
+                <OrbisLogo />
+              </h2>
               <ul>
                 <li>
                   <Link href="/orbis" className={styles.link}>
-                    Orbis
+                    <OrbisLogo />
                   </Link>
                 </li>
                 <li>

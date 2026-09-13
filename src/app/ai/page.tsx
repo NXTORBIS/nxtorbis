@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { OrbisLogo } from "@/components/ui/OrbisLogo";
 import { RedirectToOrbis } from "./RedirectToOrbis";
 
 /**
@@ -22,7 +23,7 @@ export default function AiRedirect() {
       <section className="section">
         <div className="container">
           <p className="t-lead">
-            Orbis now lives at <Link href="/orbis">nxtorbis.com/orbis</Link>.
+            <OrbisLogo /> now lives at <Link href="/orbis">nxtorbis.com/orbis</Link>.
           </p>
         </div>
       </section>
