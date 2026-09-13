@@ -119,4 +119,22 @@ const orbisOg = Buffer.from(`
 </svg>`);
 await sharp(orbisOg).png({ compressionLevel: 9 }).toFile("public/orbis/og-orbis.png");
 
+// 5. The original Orbis logo for the /orbis heading: the wordmark artwork as
+//    supplied. The file still carries a faint haze across a rectangle behind
+//    the letters (alpha 3-10 of 255), which shows as a grey box on a dark page.
+//    Pixels below alpha 8 are removed, easing in up to 24, so the letters,
+//    their glow and the ring are unchanged. Then the empty margin is trimmed.
+{
+  const src = "public/orbis/source/orbis-wordmark.png";
+  const { data, info } = await sharp(src).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  for (let i = 3; i < data.length; i += 4) {
+    const t = Math.min(1, Math.max(0, (data[i] - 8) / 16));
+    data[i] = Math.round(data[i] * t * t * (3 - 2 * t));
+  }
+  const keyed = await sharp(data, { raw: info }).png().toBuffer();
+  const trimmedLogo = await sharp(keyed).trim({ threshold: 1 }).png({ compressionLevel: 9 }).toBuffer({ resolveWithObject: true });
+  await sharp(trimmedLogo.data).toFile("public/orbis/orbis-logo.png");
+  console.log("orbis-logo.png " + trimmedLogo.info.width + "x" + trimmedLogo.info.height);
+}
+
 console.log(JSON.stringify({ dark: [dark.width, dark.height], light: [light.width, light.height], ring: [ring.width, ring.height] }));

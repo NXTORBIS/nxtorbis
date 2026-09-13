@@ -228,6 +228,16 @@
   color: var(--ob-text);
 }
 
+/* The original Orbis logo as the heading. Sized by width so the artwork's
+   own proportions are never altered. */
+.heroLogo {
+  display: block;
+  width: clamp(15rem, 40vw, 36rem);
+  max-width: 100%;
+  height: auto;
+  margin-left: -0.4rem;
+}
+
 .tagline {
   margin: 0;
   font-family: var(--font-display);
@@ -1464,6 +1474,10 @@
   font-family: var(--font-display);
   font-weight: 500;
   font-size: 1.35rem;
+}
+
+.guideTitleNext {
+  margin-top: 1.75rem;
 }
 
 .guideSteps {

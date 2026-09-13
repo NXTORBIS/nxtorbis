@@ -38,8 +38,11 @@ export function OrbisHero() {
           <p className={cx("eyebrow", styles.label)} style={delay(1000)}>
             {orbisCopy.label}
           </p>
+          {/* The original Orbis logo is the heading. Its alt text keeps the name
+              "Orbis" for search engines and screen readers. */}
           <h1 id="orbis-title" className={styles.heroTitle} style={delay(1080)}>
-            {orbisCopy.hero.title}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.heroLogo} src="/orbis/orbis-logo.png" alt={orbisCopy.hero.title} width={1321} height={399} fetchPriority="high" />
           </h1>
           <p className={styles.tagline} style={delay(1260)}>
             {orbisCopy.hero.tagline}

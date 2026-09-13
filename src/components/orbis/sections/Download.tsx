@@ -4,9 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
 import { Button } from "@/components/ui/Button";
-import { orbisCopy, orbisDocsUrl, orbisInstallGuide, orbisPlatforms, orbisReleasesUrl, type OrbisPlatform } from "@/content/orbis";
+import { orbisCopy, orbisDocsUrl, orbisInstallGuide, orbisPlatforms, orbisPortableGuide, orbisReleasesUrl, type OrbisPlatform } from "@/content/orbis";
 import {
   archLabel,
+  buildLabel,
   detectPlatform,
   formatDate,
   formatSize,
@@ -313,7 +314,7 @@ function PlatformCard({
       </div>
 
       {builds.length > 1 && (
-        <div className={styles.archPicker} role="radiogroup" aria-label={`${meta.label} architecture`}>
+        <div className={styles.archPicker} role="radiogroup" aria-label={`${meta.label} download type`}>
           {builds.map((b, i) => (
             <button
               key={b.fileName}
@@ -323,13 +324,19 @@ function PlatformCard({
               className={cx(styles.pill, i === choice && styles.pillActive)}
               onClick={() => setChoice(i)}
             >
-              {archLabel(platform, b.arch) ?? b.fileName}
+              {buildLabel(b, builds)}
             </button>
           ))}
         </div>
       )}
 
       <dl className={styles.facts}>
+        {builds.length > 1 && (
+          <div>
+            <dt>Download</dt>
+            <dd>{buildLabel(build, [build])}</dd>
+          </div>
+        )}
         <div>
           <dt>Version</dt>
           <dd>{release.version}</dd>
@@ -363,7 +370,7 @@ function PlatformCard({
           loadingLabel="Starting download…"
           onClick={() => onDownload(build)}
         >
-          {meta.cta}
+          {builds.length > 1 && build.kind === "portable" ? "Download portable" : meta.cta}
         </Button>
       </div>
       <p className={styles.fileName}>{build.fileName}</p>
@@ -399,6 +406,8 @@ export function OrbisInstallation() {
   const [open, setOpen] = useState(false);
   const latest = state.status === "ready" ? state.releases[0] : null;
   const guides = latest ? platformsOf(latest).map((p) => p.platform).filter((p) => (orbisInstallGuide[p]?.length ?? 0) > 0) : [];
+  const hasPortable = (p: OrbisPlatform) =>
+    !!latest?.builds.some((b) => b.platform === p && b.kind === "portable") && (orbisPortableGuide[p]?.length ?? 0) > 0;
 
   useEffect(() => {
     const onOpen = () => setOpen(true);
@@ -455,6 +464,19 @@ export function OrbisInstallation() {
                     </li>
                   ))}
                 </ol>
+                {hasPortable(p) && (
+                  <>
+                    <h3 className={cx(styles.guideTitle, styles.guideTitleNext)}>Portable on {orbisPlatforms[p].label}</h3>
+                    <ol className={styles.guideSteps}>
+                      {(orbisPortableGuide[p] ?? []).map((g) => (
+                        <li key={g.title}>
+                          <strong>{g.title}</strong>
+                          {g.body}
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                )}
               </div>
             ))}
           </div>
