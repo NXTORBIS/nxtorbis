@@ -1,0 +1,83 @@
+/* The Orb's stage: a layer spanning the whole page, behind its content.
+
+   Not position: fixed. The site's page transition animates `transform` on an
+   ancestor, and a transformed ancestor turns "fixed" into "relative to that
+   ancestor" — the Orb stayed at the top of the document while the page
+   scrolled away from it. The engine instead places the Orb relative to this
+   layer's own position, which is correct whatever the ancestors do, and the
+   layer's clipping keeps the Orb off the shared footer. */
+
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint;
+}
+
+.canvas,
+.fallback {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Static Orb for browsers without WebGL: still a shell, a core and two rings. */
+.fallback {
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 240, 214, 0.55) 0%, rgba(255, 226, 178, 0.14) 12%, transparent 30%),
+    radial-gradient(circle at 36% 30%, rgba(255, 250, 240, 0.35) 0%, transparent 18%),
+    radial-gradient(circle at 50% 50%, rgba(34, 34, 40, 0.3) 0%, rgba(20, 20, 24, 0.35) 62%, rgba(225, 228, 236, 0.28) 70%, transparent 72%);
+  box-shadow:
+    0 0 90px rgba(237, 210, 170, 0.12),
+    inset 0 0 60px rgba(255, 255, 255, 0.05);
+}
+
+.fallback::before,
+.fallback::after {
+  content: "";
+  position: absolute;
+  inset: 18% -26%;
+  border-radius: 50%;
+  border: 1px solid rgba(235, 228, 216, 0.22);
+  transform: rotate(-16deg);
+}
+
+.fallback::after {
+  inset: 26% -36%;
+  border-color: rgba(237, 177, 102, 0.18);
+  transform: rotate(22deg);
+}
+
+/* Slots: invisible squares that say where the Orb goes. */
+.slot {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.slotButton {
+  cursor: pointer;
+}
+
+.slotButton:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 12px;
+}
