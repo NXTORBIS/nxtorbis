@@ -6,7 +6,7 @@ export const dynamic = "force-static";
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = company.domain;
   const lastModified = new Date();
-  const pages = ["", "/about", "/services", "/products", "/pricing", "/contact"];
+  const pages = ["", "/about", "/services", "/products", "/ai", "/pricing", "/contact"];
   return [
     ...pages.map((p) => ({
       url: `${base}${p}`,

@@ -1,66 +1,71 @@
 /**
- * Prepares brand + media assets from the original source files.
- * - Trims transparent margins from the official wordmark (no redraw, proportions untouched)
- * - Crops the globe glyph from the official wordmark for favicon / app icons
- * - Renders a static Open Graph image
+ * Prepares brand assets from the official source artwork in public/brand/source/.
+ *
+ *   nxtorbis-logo-dark.png   white wordmark with the ring as its O, for dark surfaces
+ *   nxtorbis-logo-light.png  black wordmark with the ring as its O, for light surfaces
+ *   nxtorbis-mark.png        the ring on its own
+ *
+ * The artwork is never redrawn or recoloured: the wordmarks are only trimmed
+ * of their transparent margins, and the ring is only trimmed and centred. The
+ * ring alone is used wherever a full wordmark cannot be read — the browser
+ * tab, the home-screen icon, the PWA icons.
+ *
  * Run: npm run assets
  */
 import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 
-const SRC_LOGO = "public/brand/nxtorbis-logo-source.png";
-// Measured from the source artwork (947x240). The wordmark's alpha bounds are
-// x 207-808, y 85-179. The globe glyph is a separate shape (it touches no
-// neighbouring letter) occupying exactly x 424-518, y 85-179 - a true square.
-// Crop it tightly: even 2px of slack pulls in a sliver of the adjacent T and R,
-// which shows up as a stray stroke in the favicon. Re-measure if the logo
-// file is ever replaced.
-const LOGO_BOX = { left: 207, top: 85, width: 602, height: 95 };
-const GLOBE_BOX = { left: 424, top: 85, width: 95, height: 95 };
+const SRC = "public/brand/source";
+const OUT = "public/brand";
+const BG = "#0a0806";
 
-await mkdir("public/brand", { recursive: true });
-await mkdir("src/app", { recursive: true });
+await mkdir(OUT, { recursive: true });
 
-// 1. Trimmed wordmark (white on transparent)
-await sharp(SRC_LOGO).extract(LOGO_BOX).png({ compressionLevel: 9 }).toFile("public/brand/nxtorbis-wordmark.png");
-
-// 2. Globe glyph -> square icons with generous padding, dark background for app icons.
-// The globe is a disc, so its bounding box also contains the serif tip of the
-// adjacent T in the corners the disc does not fill. A rectangular crop cannot
-// exclude that: it shows up as a stray stroke in the icon. So keep only the
-// pixels of the glyph itself, found by flood-filling out from its centre.
-async function extractGlyph(box) {
-  const { data, info } = await sharp(SRC_LOGO).extract(box).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const { width: w, height: h, channels: c } = info;
-  const keep = new Uint8Array(w * h);
-  const stack = [[Math.floor(w / 2), Math.floor(h / 2)]];
-  while (stack.length) {
-    const [x, y] = stack.pop();
-    if (x < 0 || y < 0 || x >= w || y >= h) continue;
-    const i = y * w + x;
-    if (keep[i] || data[i * c + 3] <= 24) continue;
-    keep[i] = 1;
-    stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
-  }
-  for (let i = 0; i < w * h; i++) if (!keep[i]) data[i * c + 3] = 0;
-  return sharp(data, { raw: { width: w, height: h, channels: c } }).png().toBuffer();
+/** Trim transparent margins only. Returns the trimmed PNG and its size. */
+async function trimmed(file) {
+  const { data, info } = await sharp(`${SRC}/${file}`).trim({ threshold: 10 }).png({ compressionLevel: 9 }).toBuffer({ resolveWithObject: true });
+  return { data, width: info.width, height: info.height };
 }
-const globe = await extractGlyph(GLOBE_BOX);
-async function icon(size, out, { bg = "#0a0806", pad = 0.18 } = {}) {
+
+// 1. Wordmarks — dark is what the site uses; light is kept ready for light surfaces.
+// Shipped at 800px wide: the largest use is the entrance at about 350px, so
+// this covers 2x screens without sending the full source to every visitor.
+const dark = await trimmed("nxtorbis-logo-dark.png");
+await sharp(dark.data).resize({ width: 800 }).png({ compressionLevel: 9 }).toFile(`${OUT}/nxtorbis-wordmark.png`);
+const light = await trimmed("nxtorbis-logo-light.png");
+await sharp(light.data).resize({ width: 800 }).png({ compressionLevel: 9 }).toFile(`${OUT}/nxtorbis-wordmark-light.png`);
+
+// 2. The ring, trimmed and centred on a transparent square.
+const ring = await trimmed("nxtorbis-mark.png");
+const side = Math.max(ring.width, ring.height);
+const square = await sharp({ create: { width: side, height: side, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+  .composite([{ input: ring.data, gravity: "centre" }])
+  .png()
+  .toBuffer();
+await sharp(square).toFile(`${OUT}/nxtorbis-mark.png`);
+
+/**
+ * Icons. The browser-tab favicon stays transparent so the ring sits naturally
+ * on light and dark tab strips alike. Home-screen and PWA icons need a solid
+ * tile — platforms fill transparency with black or white unpredictably — so
+ * those sit on the site's own dark ground.
+ */
+async function icon(size, out, { bg = BG, pad = 0.16 } = {}) {
   const inner = Math.round(size * (1 - pad * 2));
-  const g = await sharp(globe).resize({ width: inner, height: inner, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
-  await sharp({ create: { width: size, height: size, channels: 4, background: bg } })
-    .composite([{ input: g, gravity: "centre" }])
-    .png()
-    .toFile(out);
+  const g = await sharp(square).resize({ width: inner, height: inner, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
+  const base = bg
+    ? { create: { width: size, height: size, channels: 4, background: bg } }
+    : { create: { width: size, height: size, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } };
+  await sharp(base).composite([{ input: g, gravity: "centre" }]).png({ compressionLevel: 9 }).toFile(out);
 }
-await icon(512, "public/brand/icon-512.png");
-await icon(192, "public/brand/icon-192.png");
+await icon(64, "src/app/icon.png", { bg: null, pad: 0.04 });
 await icon(180, "src/app/apple-icon.png");
-await icon(64, "src/app/icon.png");
+await icon(192, `${OUT}/icon-192.png`);
+await icon(512, `${OUT}/icon-512.png`);
 
-// 4. Open Graph image 1200x630
-const wordmark = await sharp("public/brand/nxtorbis-wordmark.png").resize({ width: 520 }).png().toBuffer();
+// 3. Open Graph image 1200x630
+const ogWordmark = await sharp(dark.data).resize({ width: 560 }).png().toBuffer();
+const ogWordmarkH = Math.round((560 * dark.height) / dark.width);
 const ogSvg = Buffer.from(`
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
   <defs>
@@ -75,16 +80,17 @@ const ogSvg = Buffer.from(`
     <line x1="80" y1="0" x2="80" y2="630"/><line x1="1120" y1="0" x2="1120" y2="630"/>
     <line x1="0" y1="80" x2="1200" y2="80"/><line x1="0" y1="550" x2="1200" y2="550"/>
   </g>
-  <g fill="none" stroke="#ffffff" stroke-opacity=".22">
-    <ellipse cx="930" cy="315" rx="230" ry="230"/>
-    <ellipse cx="930" cy="315" rx="230" ry="88" transform="rotate(-24 930 315)"/>
-    <ellipse cx="930" cy="315" rx="230" ry="150" transform="rotate(-24 930 315)"/>
-    <ellipse cx="930" cy="315" rx="88" ry="230" transform="rotate(-24 930 315)"/>
-  </g>
-  <circle cx="1108" cy="212" r="5" fill="#edb166"/>
-  <text x="120" y="392" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="500" fill="#f4f4f5" letter-spacing="-2">Building what’s next.</text>
-  <text x="120" y="448" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#b8b0a2">Software · Products · AI · Mobile · Blockchain · Cloud</text>
-  <text x="120" y="520" font-family="Courier New, monospace" font-size="18" fill="#857e72" letter-spacing="3">NXTORBIS® TECHNOLOGIES PRIVATE LIMITED — CHENNAI, INDIA</text>
+  <text x="120" y="${196 + ogWordmarkH + 96}" fill="#f7f3ec" font-family="Helvetica, Arial, sans-serif" font-size="58" font-weight="500" letter-spacing="-1">Building what’s next.</text>
+  <text x="120" y="${196 + ogWordmarkH + 150}" fill="#b8b0a2" font-family="Helvetica, Arial, sans-serif" font-size="24">Software · Products · AI · Mobile · Blockchain · Cloud</text>
+  <text x="120" y="512" fill="#857e72" font-family="Courier New, monospace" font-size="16" letter-spacing="3">NXTORBIS® TECHNOLOGIES PRIVATE LIMITED — CHENNAI, INDIA</text>
 </svg>`);
-await sharp(ogSvg).composite([{ input: wordmark, left: 120, top: 160 }]).png().toFile("public/brand/og-image.png");
-console.log("done");
+const ogRing = await sharp(square).resize({ width: 300, height: 300, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
+await sharp(ogSvg)
+  .composite([
+    { input: ogRing, left: 820, top: 165, blend: "screen" },
+    { input: ogWordmark, left: 120, top: 196 },
+  ])
+  .png()
+  .toFile(`${OUT}/og-image.png`);
+
+console.log(JSON.stringify({ dark: [dark.width, dark.height], light: [light.width, light.height], ring: [ring.width, ring.height] }));

@@ -89,10 +89,16 @@ ready to connect to any backend:
 
 ## Brand assets
 
-`public/brand/nxtorbis-logo-source.png` is the untouched official logo file. The script only crops
-transparent margins to produce `nxtorbis-wordmark.png` and crops the globe glyph for icons —
-proportions, colour and form are never changed. To update the logo, replace the source file and run
-`npm run assets`.
+The untouched official artwork lives in `public/brand/source/`:
+
+| File | Use |
+|---|---|
+| `nxtorbis-logo-dark.png` | White wordmark for dark surfaces — the one the site uses |
+| `nxtorbis-logo-light.png` | Black wordmark for light surfaces — generated, ready when a light surface needs it |
+| `nxtorbis-mark.png` | The ring alone — browser tab, home-screen and PWA icons |
+
+`npm run assets` trims transparent margins and sizes the files; proportions, colour and form are
+never changed. To update a logo, replace the file in `source/` and run the script.
 
 ## Deployment
 
