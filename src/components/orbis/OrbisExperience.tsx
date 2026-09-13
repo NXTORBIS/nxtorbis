@@ -1,5 +1,6 @@
 "use client";
 
+import { BackgroundParticles } from "./BackgroundParticles";
 import { OrbStage } from "./orb/OrbStage";
 import { OrbisHero, OrbisIntro } from "./sections/Opening";
 import { OrbisConnected } from "./sections/Connected";
@@ -20,6 +21,7 @@ export function OrbisExperience() {
   return (
     <div className={styles.page}>
       <div className={styles.atmosphere} aria-hidden="true" />
+      <BackgroundParticles />
       <OrbStage>
         <div className={styles.content}>
           <OrbisHero />
