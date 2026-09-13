@@ -7,6 +7,7 @@ import { cx } from "@/lib/cx";
 import { company, cta, nav } from "@/content/site";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
+import { withOrbisLogo } from "@/components/ui/OrbisLogo";
 import styles from "./Navbar.module.css";
 
 function isActive(pathname: string, href: string) {
@@ -69,7 +70,7 @@ export function Navbar() {
               return (
                 <li key={item.href}>
                   <Link href={item.href} className={cx(styles.link, active && styles.active)} aria-current={active ? "page" : undefined}>
-                    <span className={styles.label}>{item.label}</span>
+                    <span className={styles.label}>{withOrbisLogo(item.label)}</span>
                     <span className={styles.dot} aria-hidden="true" />
                   </Link>
                 </li>
@@ -112,7 +113,7 @@ export function Navbar() {
                     tabIndex={open ? 0 : -1}
                   >
                     <span className="num">0{i + 1}</span>
-                    <span>{item.label}</span>
+                    <span>{withOrbisLogo(item.label)}</span>
                   </Link>
                 </li>
               );

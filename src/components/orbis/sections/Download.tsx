@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
 import { Button } from "@/components/ui/Button";
+import { withOrbisLogo } from "@/components/ui/OrbisLogo";
 import { orbisCopy, orbisDocsUrl, orbisInstallGuide, orbisPlatforms, orbisPortableGuide, orbisReleasesUrl, type OrbisPlatform } from "@/content/orbis";
 import {
   archLabel,
@@ -138,10 +139,10 @@ export function OrbisDownload() {
       <div className="container">
         <header className={styles.downloadHead}>
           <Reveal as="h2" id="orbis-download-title" className={styles.sectionTitle}>
-            {orbisCopy.download.heading}
+            {withOrbisLogo(orbisCopy.download.heading, { display: true })}
           </Reveal>
           <Reveal as="p" className={styles.muted} delay={100}>
-            {orbisCopy.download.sub}
+            {withOrbisLogo(orbisCopy.download.sub)}
           </Reveal>
         </header>
 
@@ -157,7 +158,7 @@ export function OrbisDownload() {
         {state.status === "error" && <ReleaseError message={state.message} onRetry={retry} />}
         {state.status === "empty" && (
           <div className={styles.panelBox}>
-            <p className={styles.statusTitle}>{orbisCopy.empty.heading}</p>
+            <p className={styles.statusTitle}>{withOrbisLogo(orbisCopy.empty.heading)}</p>
             <p className={styles.statusText}>{orbisCopy.empty.text}</p>
           </div>
         )}
@@ -206,7 +207,7 @@ function DownloadStatus({
   if (phase === "preparing" || phase === "starting") {
     return (
       <div className={styles.status}>
-        <p className={styles.statusText}>{phase === "preparing" ? "Preparing Orbis…" : "Starting download…"}</p>
+        <p className={styles.statusText}>{phase === "preparing" ? withOrbisLogo("Preparing Orbis…") : "Starting download…"}</p>
         <span className={styles.indeterminate} aria-hidden="true" />
       </div>
     );
@@ -226,7 +227,7 @@ function DownloadStatus({
   if (phase === "ready") {
     return (
       <div className={styles.status}>
-        <p className={styles.statusTitle}>Orbis is ready.</p>
+        <p className={styles.statusTitle}>{withOrbisLogo("Orbis is ready.")}</p>
         <p className={styles.statusText}>Your download has started — check your browser’s downloads.</p>
         <div className={styles.statusActions}>
           <button type="button" className={styles.pill} onClick={openInstallGuide}>
@@ -308,7 +309,7 @@ function PlatformCard({
 
       <div>
         <h3 id={`orbis-card-${platform}`} className={styles.cardTitle}>
-          {meta.title}
+          {withOrbisLogo(meta.title)}
         </h3>
         {compatibility && <p className={styles.cardCompat}>{compatibility}</p>}
       </div>
@@ -419,7 +420,7 @@ export function OrbisInstallation() {
     <section id="install" className={cx(styles.section, styles.install)} aria-labelledby="orbis-install-title">
       <div className="container">
         <Reveal as="h2" id="orbis-install-title" className={styles.sectionTitle}>
-          {orbisCopy.install.heading}
+          {withOrbisLogo(orbisCopy.install.heading, { display: true })}
         </Reveal>
 
         <div className={styles.stepsWrap}>
@@ -430,8 +431,8 @@ export function OrbisInstallation() {
             {orbisCopy.install.steps.map((s, i) => (
               <Reveal as="li" key={s.n} className={styles.step} delay={i * 120}>
                 <span className={styles.stepNum}>{s.n}</span>
-                <h3 className={styles.stepTitle}>{s.title}</h3>
-                <p className={styles.muted}>{s.body}</p>
+                <h3 className={styles.stepTitle}>{withOrbisLogo(s.title)}</h3>
+                <p className={styles.muted}>{withOrbisLogo(s.body)}</p>
               </Reveal>
             ))}
           </ol>
@@ -459,8 +460,8 @@ export function OrbisInstallation() {
                 <ol className={styles.guideSteps}>
                   {(orbisInstallGuide[p] ?? []).map((g) => (
                     <li key={g.title}>
-                      <strong>{g.title}</strong>
-                      {g.body}
+                      <strong>{withOrbisLogo(g.title)}</strong>
+                      {withOrbisLogo(g.body)}
                     </li>
                   ))}
                 </ol>
@@ -470,8 +471,8 @@ export function OrbisInstallation() {
                     <ol className={styles.guideSteps}>
                       {(orbisPortableGuide[p] ?? []).map((g) => (
                         <li key={g.title}>
-                          <strong>{g.title}</strong>
-                          {g.body}
+                          <strong>{withOrbisLogo(g.title)}</strong>
+                          {withOrbisLogo(g.body)}
                         </li>
                       ))}
                     </ol>

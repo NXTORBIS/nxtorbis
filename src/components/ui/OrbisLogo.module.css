@@ -1,0 +1,28 @@
+/* The Orbis logo in running text.
+   Measured from public/orbis/orbis-logo.png: letters span 14.0%–85.5% of the
+   artwork's height. At 1em tall the letters are 0.72em, the cap height of the
+   site's type, and dropping the image by 14.5% of its height puts them on the
+   baseline.
+   It never goes below 20px: smaller than that, the ring's fine strokes fade
+   and the logo reads as "RBIS". So in small text (the nav, buttons, footer
+   labels) the logo stands a little taller than the words around it. */
+.logo {
+  --orbis-logo-h: max(1em, 1.25rem);
+  display: inline-block;
+  width: auto;
+  max-width: none;
+  height: var(--orbis-logo-h);
+  margin: 0;
+  vertical-align: calc(var(--orbis-logo-h) * -0.145);
+  user-select: none;
+}
+
+/* The artwork keeps its glow to the right of the S (15% of its height), which
+   leaves a full stop or question mark floating. Punctuation tucks into it. */
+.beforePunctuation {
+  margin-right: calc(var(--orbis-logo-h) * -0.13);
+}
+
+.word {
+  white-space: nowrap;
+}
