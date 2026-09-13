@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { company, nav, products, services } from "@/content/site";
+import { orbisReleasesUrl } from "@/content/orbis";
 import { Logo } from "@/components/ui/Logo";
 import { ArrowRight, ArrowUpRight } from "@/components/ui/Icons";
 import styles from "./Footer.module.css";
@@ -56,6 +57,36 @@ export function Footer() {
                     </Link>
                   </li>
                 ))}
+              </ul>
+            </div>
+            <div className={styles.col}>
+              <h2 className={styles.colTitle}>Orbis</h2>
+              <ul>
+                <li>
+                  <Link href="/orbis" className={styles.link}>
+                    Orbis
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/orbis#features" className={styles.link}>
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/orbis#download" className={styles.link}>
+                    Download
+                  </Link>
+                </li>
+                <li>
+                  <a href={orbisReleasesUrl} className={styles.link} target="_blank" rel="noreferrer noopener">
+                    Releases
+                  </a>
+                </li>
+                <li>
+                  <a href={`mailto:${company.email}?subject=${encodeURIComponent("Orbis support")}`} className={styles.link}>
+                    Support
+                  </a>
+                </li>
               </ul>
             </div>
             <div className={styles.col}>

@@ -93,4 +93,30 @@ await sharp(ogSvg)
   .png()
   .toFile(`${OUT}/og-image.png`);
 
+// 4. Orbis Open Graph image 1200x630. Product name and tagline only; no claims.
+await mkdir("public/orbis", { recursive: true });
+const orbisOg = Buffer.from(`
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
+  <defs>
+    <radialGradient id="bg" cx="72%" cy="48%" r="62%"><stop offset="0" stop-color="#18171a"/><stop offset="1" stop-color="#050506"/></radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f2e2c8" stop-opacity=".22"/><stop offset=".55" stop-color="#e8c79a" stop-opacity=".06"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <radialGradient id="shell" cx="42%" cy="36%" r="64%"><stop offset="0" stop-color="#fff6e6" stop-opacity=".45"/><stop offset=".2" stop-color="#e9e4dc" stop-opacity=".14"/><stop offset=".64" stop-color="#1b1b1f" stop-opacity=".6"/><stop offset=".92" stop-color="#d9dce4" stop-opacity=".2"/><stop offset="1" stop-color="#f0e6d6" stop-opacity=".5"/></radialGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff4e2" stop-opacity=".95"/><stop offset=".25" stop-color="#f3d7a8" stop-opacity=".32"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="880" cy="315" r="300" fill="url(#glow)"/>
+  <circle cx="880" cy="315" r="170" fill="url(#shell)"/>
+  <circle cx="880" cy="315" r="105" fill="url(#core)"/>
+  <g fill="none" stroke-width="1.2">
+    <ellipse cx="880" cy="315" rx="250" ry="72" transform="rotate(-18 880 315)" stroke="#ece6da" stroke-opacity=".28"/>
+    <ellipse cx="880" cy="315" rx="272" ry="96" transform="rotate(24 880 315)" stroke="#edb166" stroke-opacity=".22"/>
+    <ellipse cx="880" cy="315" rx="232" ry="58" transform="rotate(66 880 315)" stroke="#ece6da" stroke-opacity=".14"/>
+  </g>
+  <text x="96" y="178" fill="#7a7771" font-family="Courier New, monospace" font-size="20" letter-spacing="6">NXTORBIS®</text>
+  <text x="88" y="352" fill="#f3f1ec" font-family="Helvetica, Arial, sans-serif" font-size="176" font-weight="500" letter-spacing="-8">Orbis</text>
+  <text x="96" y="432" fill="#d9d5cd" font-family="Helvetica, Arial, sans-serif" font-size="40" letter-spacing="-1">Intelligence, within reach.</text>
+  <text x="96" y="486" fill="#8b8882" font-family="Helvetica, Arial, sans-serif" font-size="24">Your AI. Your workspace. Your world.</text>
+</svg>`);
+await sharp(orbisOg).png({ compressionLevel: 9 }).toFile("public/orbis/og-orbis.png");
+
 console.log(JSON.stringify({ dark: [dark.width, dark.height], light: [light.width, light.height], ring: [ring.width, ring.height] }));

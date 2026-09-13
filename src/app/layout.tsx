@@ -95,8 +95,12 @@ export const viewport: Viewport = {
  * apply because scripting *is* enabled — the JavaScript simply failed to
  * arrive. Without this the page would come back empty of everything the
  * reveal system owns.
+ *
+ * /orbis is the exception: it opens with its own Orb formation, and two
+ * openings back to back would be one too many. There the script only marks
+ * the document, so the hero copy can wait for the Orb from the first paint.
  */
-const ENTRANCE_BOOT = `(function(){try{var d=document.documentElement,k="nx-entered";
+const ENTRANCE_BOOT = `(function(){try{var d=document.documentElement,k="nx-entered";var pth=location.pathname;if(pth==="/orbis"||pth==="/orbis/"){if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("orbis-intro");return}
 if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1");
 d.classList.add("entry-active","entry-hold");
 setTimeout(function(){d.classList.remove("entry-active","entry-hold");
