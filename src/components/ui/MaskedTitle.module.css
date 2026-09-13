@@ -1,0 +1,46 @@
+.title {
+  display: block;
+}
+
+.line {
+  display: block;
+  overflow: hidden;
+  /* room for descenders and italic overhang so the mask never clips glyphs */
+  padding: 0.04em 0.12em 0.12em 0;
+  margin: -0.04em -0.12em -0.12em 0;
+}
+
+.inner {
+  display: inline-block;
+  transform: translateY(112%);
+  animation: mt-rise 1000ms var(--ease-out) both;
+  will-change: transform;
+}
+
+/* Held until the entrance hands over, so the headline rises into the opening
+   layer rather than finishing behind it. */
+:global(html.entry-hold) .inner {
+  animation-play-state: paused;
+}
+
+@keyframes mt-rise {
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inner {
+    transform: none;
+    animation: mt-fade 300ms ease both;
+  }
+
+  @keyframes mt-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}

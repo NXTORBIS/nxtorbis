@@ -1,0 +1,206 @@
+.heroAction {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+
+/* Factors */
+.factorList {
+  display: grid;
+  border-top: 1px solid var(--border);
+}
+
+.factor {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 0.35rem var(--space-3);
+  padding: 1.35rem 0;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+
+.factorTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2.2vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.factorBody {
+  grid-column: 2;
+  max-width: 44ch;
+}
+
+/* How */
+.how {
+  border-top: 1px solid var(--border);
+}
+
+.howGrid {
+  display: grid;
+  gap: var(--space-7);
+}
+
+.howIntro {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.howIntro h2 {
+  max-width: 14ch;
+}
+
+.steps {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.step {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.stepNum {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.stepTitle {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+/* Plans */
+.plans {
+  border-top: 1px solid var(--border);
+  scroll-margin-top: var(--nav-h);
+}
+
+.planGrid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.plan {
+  display: grid;
+  gap: var(--space-5);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border: 0;
+  border-radius: 14px;
+  align-content: start;
+  transition:
+    border-color var(--dur-med) var(--ease-out),
+    transform var(--dur-med) var(--ease-out),
+    background-color var(--dur-med) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .plan:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.planFeatured {
+  --glass-tint: var(--glass-accent-tint);
+}
+
+.planHead {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.planName {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.planPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  padding-block: 0.5rem;
+}
+
+.planCurrency {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.planAmount {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.planPeriod {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+}
+
+.planList {
+  display: grid;
+  gap: 0.6rem;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.planList li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.planList svg {
+  flex: none;
+  margin-top: 0.3rem;
+  color: var(--accent);
+}
+
+.planCta {
+  justify-self: start;
+}
+
+.planNote {
+  margin-top: var(--space-5);
+  max-width: 60ch;
+}
+
+@media (min-width: 768px) {
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .planGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .factorList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-7);
+  }
+
+  .howGrid {
+    grid-template-columns: 4fr 8fr;
+    gap: var(--space-8);
+  }
+}

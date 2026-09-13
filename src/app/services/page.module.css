@@ -1,0 +1,77 @@
+.jump {
+  display: grid;
+  border-top: 1px solid var(--border);
+}
+
+.jumpLink {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: var(--space-3);
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.jumpLink:hover {
+  color: var(--text);
+}
+
+.list {
+  display: grid;
+}
+
+.service {
+  padding-block: clamp(4rem, 9vw, 8rem);
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: var(--nav-h);
+}
+
+.serviceGrid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.serviceVisual {
+  max-width: 260px;
+  color: var(--text-2);
+}
+
+.serviceCopy {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 44rem;
+}
+
+.serviceTitle {
+  max-width: 14ch;
+}
+
+@media (min-width: 1024px) {
+  .serviceGrid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--grid-gap);
+    align-items: center;
+  }
+
+  .serviceVisual {
+    grid-column: 1 / span 4;
+    max-width: 360px;
+  }
+
+  .serviceCopy {
+    grid-column: 6 / span 7;
+  }
+
+  .flip .serviceVisual {
+    grid-column: 9 / span 4;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .flip .serviceCopy {
+    grid-column: 1 / span 7;
+    grid-row: 1;
+  }
+}

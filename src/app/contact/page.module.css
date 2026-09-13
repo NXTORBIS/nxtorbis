@@ -1,0 +1,31 @@
+.grid {
+  display: grid;
+  gap: clamp(3rem, 6vw, 5rem);
+}
+
+.formCol,
+.detailsCol {
+  display: grid;
+  gap: var(--space-6);
+  align-content: start;
+}
+
+.formSkeleton {
+  min-height: 28rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-elevated);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 7fr 4fr;
+    column-gap: calc(var(--grid-gap) * 3);
+    align-items: start;
+  }
+
+  .detailsCol {
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+  }
+}

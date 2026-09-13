@@ -1,0 +1,20 @@
+.contact {
+  border-top: 1px solid var(--border);
+}
+
+.contactGrid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.contactHeading {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .contactGrid {
+    grid-template-columns: 5fr 6fr;
+    column-gap: calc(var(--grid-gap) * 2);
+    align-items: start;
+  }
+}
