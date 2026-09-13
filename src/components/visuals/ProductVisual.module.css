@@ -1,0 +1,65 @@
+.frame {
+  position: relative;
+  border: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  color: var(--text);
+  aspect-ratio: 10 / 7;
+  transition: border-color var(--dur-med) var(--ease-out);
+}
+
+.large {
+  aspect-ratio: 16 / 10;
+}
+
+.art {
+  position: absolute;
+  inset: 0;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 8, 6, 0.85), transparent 35%);
+  pointer-events: none;
+}
+
+.meta {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.meta > :first-child {
+  white-space: nowrap;
+}
+
+.meta > :last-child {
+  text-align: right;
+}
+
+a:focus-visible .frame {
+  border-color: var(--border-strong);
+}
+
+@media (hover: hover) {
+  a:hover .frame {
+    border-color: var(--border-strong);
+  }
+
+  a:hover .art {
+    transform: scale(1.03);
+  }
+}
+
+@media (min-width: 1024px) {
+  .large {
+    aspect-ratio: 16 / 9;
+  }
+}

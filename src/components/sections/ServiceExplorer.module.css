@@ -1,0 +1,220 @@
+.section {
+  border-top: 1px solid var(--border);
+}
+
+/* ---------- Desktop explorer ---------- */
+.explorer {
+  display: none;
+}
+
+.tabs {
+  display: grid;
+  align-content: start;
+  border-top: 1px solid var(--border);
+}
+
+.tab {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 1.35rem 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  color: var(--text-3);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.tab:hover,
+.tabActive {
+  color: var(--text);
+}
+
+/* inactive rows recede while the pointer explores the list */
+@media (hover: hover) {
+  .tabs:hover .tab:not(:hover):not(.tabActive) {
+    opacity: 0.55;
+  }
+}
+
+.tab {
+  transition: color var(--dur-fast) var(--ease-out), opacity var(--dur-med) var(--ease-out);
+}
+
+.tabNum {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+}
+
+.tabActive .tabNum {
+  color: var(--accent);
+}
+
+.tabLabel {
+  font-family: var(--font-display);
+  font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+.tabActive .tabLabel {
+  transform: translateX(6px);
+}
+
+.tabBar {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 1px;
+  width: 100%;
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+.tabActive .tabBar {
+  transform: scaleX(1);
+}
+
+/* Level 03 feature glass: the active service reads as a lit pane of glass
+   floating over the section's atmosphere. */
+.panel {
+  position: relative;
+  border: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  min-height: 100%;
+}
+
+.panelInner {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--space-6);
+  padding: clamp(2rem, 3.5vw, 3.5rem);
+  animation: panel-in var(--dur-med) var(--ease-out) both;
+  height: 100%;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.panelCopy {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.panelTitle {
+  max-width: 16ch;
+  font-size: clamp(1.75rem, 2.8vw, 2.75rem);
+}
+
+.panelDesc {
+  max-width: 40ch;
+}
+
+.panelDetail {
+  max-width: 48ch;
+  color: var(--text-3);
+}
+
+.panelVisual {
+  align-self: center;
+  max-width: 360px;
+  width: 100%;
+  margin-left: auto;
+  color: var(--text-2);
+}
+
+/* ---------- Mobile accordion ---------- */
+.accordion {
+  display: grid;
+  border-top: 1px solid var(--border);
+}
+
+.accItem {
+  border-bottom: 1px solid var(--border);
+}
+
+.accHeading {
+  font: inherit;
+}
+
+.accTrigger {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2.5rem 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 1.15rem 0;
+  text-align: left;
+  color: var(--text);
+  min-height: 44px;
+}
+
+.accLabel {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.accIcon {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-full);
+  color: var(--text-2);
+  transition: transform var(--dur-med) var(--ease-out), border-color var(--dur-fast);
+}
+
+.accIconOpen {
+  transform: rotate(45deg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.accBody {
+  overflow: hidden;
+}
+
+.accBodyInner {
+  display: grid;
+  gap: var(--space-5);
+  padding: 0 0 1.5rem 2.75rem;
+  animation: panel-in var(--dur-med) var(--ease-out) both;
+}
+
+.accVisual {
+  max-width: 200px;
+  color: var(--text-2);
+}
+
+@media (min-width: 1024px) {
+  .explorer {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: stretch;
+  }
+
+  .accordion {
+    display: none;
+  }
+}

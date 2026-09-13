@@ -1,0 +1,127 @@
+.metaItem {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+/* Statement */
+.statementGrid {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.statementBody {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+}
+
+.statementBody h2 {
+  max-width: 24ch;
+}
+
+.statementCols {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 60ch;
+}
+
+/* Capabilities */
+.capabilities {
+  border-top: 1px solid var(--border);
+}
+
+.capList {
+  display: grid;
+  border-top: 1px solid var(--border);
+}
+
+.capItem {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 0.35rem var(--space-3);
+  padding: 1.35rem 0;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+
+.capTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2.2vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.capBody {
+  grid-column: 2;
+}
+
+/* Vision */
+.vision {
+  border-top: 1px solid var(--border);
+  padding-block: clamp(6rem, 14vw, 12rem);
+  background:
+    radial-gradient(60% 50% at 50% 100%, var(--accent-muted), transparent 70%),
+    var(--bg);
+}
+
+.visionInner {
+  display: grid;
+  gap: var(--space-6);
+  justify-items: center;
+  text-align: center;
+}
+
+.visionText {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.75rem, 4vw, 3.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  max-width: 26ch;
+  text-wrap: balance;
+}
+
+.visionText .t-serif {
+  color: var(--accent);
+  font-size: 1.15em;
+}
+
+/* Mission */
+.mission {
+  border-top: 1px solid var(--border);
+}
+
+@media (min-width: 1024px) {
+  .statementGrid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--grid-gap);
+  }
+
+  .statementGrid > :first-child {
+    grid-column: 1 / span 3;
+  }
+
+  .statementBody {
+    grid-column: 4 / span 9;
+  }
+
+  .statementCols {
+    grid-template-columns: 1.2fr 1fr 1fr;
+    max-width: none;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .capList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-7);
+  }
+
+  .capItem {
+    grid-template-columns: 3.5rem 1fr;
+    padding: 1.75rem 0;
+  }
+}

@@ -1,0 +1,138 @@
+.section {
+  border-top: 1px solid var(--border);
+}
+
+.track {
+  display: none;
+}
+
+.list {
+  position: relative;
+  display: grid;
+  padding-left: 1.5rem;
+}
+
+/* vertical spine on mobile */
+.list::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  width: 1px;
+  background: var(--border);
+}
+
+.item {
+  position: relative;
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.25rem 0 1.25rem 1.25rem;
+  color: var(--text-3);
+  transition: color var(--dur-med) var(--ease-out);
+}
+
+.dot {
+  position: absolute;
+  left: -1.5rem;
+  top: 1.55rem;
+  width: 9px;
+  height: 9px;
+  border-radius: var(--r-full);
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  transition:
+    background-color var(--dur-med) var(--ease-out),
+    border-color var(--dur-med) var(--ease-out),
+    box-shadow var(--dur-med) var(--ease-out);
+}
+
+.index {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text-2);
+  transition: color var(--dur-med) var(--ease-out);
+}
+
+.body {
+  font-size: var(--fs-sm);
+  max-width: 24ch;
+}
+
+.active,
+.done {
+  color: var(--text-2);
+}
+
+.active .title,
+.done .title {
+  color: var(--text);
+}
+
+.active .index {
+  color: var(--accent);
+}
+
+.active .dot,
+.done .dot {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.active .dot {
+  box-shadow: 0 0 0 5px var(--accent-muted);
+}
+
+@media (min-width: 1024px) {
+  .track {
+    display: block;
+    height: 1px;
+    background: var(--border);
+    margin-bottom: -1px;
+    overflow: hidden;
+  }
+
+  .progress {
+    height: 100%;
+    background: var(--accent);
+    transform-origin: left;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+
+  .list {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--space-4);
+    padding-left: 0;
+  }
+
+  .list::before {
+    display: none;
+  }
+
+  .item {
+    padding: 2rem 0 0;
+    gap: 0.6rem;
+  }
+
+  .dot {
+    left: 0;
+    top: -4px;
+  }
+
+  .index {
+    padding-top: 0.25rem;
+  }
+
+  .title {
+    font-size: clamp(1.375rem, 1.8vw, 1.75rem);
+  }
+}

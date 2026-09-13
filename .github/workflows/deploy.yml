@@ -1,0 +1,60 @@
+# Builds the site and publishes it to the `gh-pages` branch, which is what
+# GitHub Pages already serves for nxtorbis.com. Keeping the existing
+# "deploy from a branch" setup means no repository settings need to change.
+#
+# Source of truth: `main` (this Next.js project)
+# Published output: `gh-pages` (generated, never edited by hand)
+name: Build and deploy nxtorbis.com
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Let a running deploy finish rather than racing it.
+concurrency:
+  group: deploy-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # A broken commit must never reach the live site.
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+
+      # public/CNAME and public/.nojekyll are copied into out/ by the build:
+      # CNAME keeps the custom domain, .nojekyll stops Pages' Jekyll step from
+      # dropping the _next/ directory (its name begins with an underscore).
+      - name: Verify the export is deployable
+        run: |
+          test -f out/index.html
+          test -f out/404.html
+          test -f out/.nojekyll
+          grep -qx 'nxtorbis.com' out/CNAME
+
+      - name: Publish to gh-pages
+        run: |
+          cd out
+          git init -q -b gh-pages
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA::7}"
+          git push -q --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

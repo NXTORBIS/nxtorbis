@@ -1,0 +1,337 @@
+/* A floating pane of glass rather than a bar welded to the viewport edge.
+   At the top of the hero it is barely there; on scroll the glass densifies. */
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  color: var(--text);
+  padding-inline: clamp(0.5rem, 2vw, 1.25rem);
+  padding-top: 0;
+  transition:
+    height var(--dur-med) var(--ease-out),
+    padding-top var(--dur-med) var(--ease-out);
+}
+
+/* the glass pane itself, inset from the viewport so it reads as floating */
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 0;
+  background-color: rgba(255, 244, 226, 0);
+  box-shadow: none;
+  backdrop-filter: blur(0px) saturate(100%);
+  -webkit-backdrop-filter: blur(0px) saturate(100%);
+  transition:
+    inset var(--dur-med) var(--ease-out),
+    border-radius var(--dur-med) var(--ease-out),
+    background-color var(--dur-med) var(--ease-out),
+    backdrop-filter var(--dur-med) var(--ease-out),
+    box-shadow var(--dur-med) var(--ease-out);
+  pointer-events: none;
+}
+
+/* hairline glass edge, brighter along the top */
+.header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 0;
+  padding: 1px;
+  background: linear-gradient(to bottom, var(--glass-edge-top), var(--glass-edge-mid) 55%, var(--glass-edge-base));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--dur-med) var(--ease-out), inset var(--dur-med) var(--ease-out), border-radius var(--dur-med) var(--ease-out);
+  pointer-events: none;
+}
+
+.scrolled {
+  height: 72px;
+  padding-top: 0.55rem;
+}
+
+.scrolled::before {
+  inset: 0;
+  border-radius: 999px;
+  background-color: rgba(255, 244, 226, 0.055);
+  backdrop-filter: blur(var(--glass-blur-2)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter: blur(var(--glass-blur-2)) saturate(var(--glass-sat));
+  box-shadow: var(--glass-inset), 0 18px 44px -32px rgba(0, 0, 0, 0.95);
+}
+
+.scrolled::after {
+  border-radius: 999px;
+  opacity: 1;
+}
+
+.inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  height: 100%;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0;
+  flex: none;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.brand:hover {
+  opacity: 0.8;
+}
+
+/* quiet entrance on first paint: brand, then links, then the CTA */
+.brand,
+.list > li,
+.actions {
+  animation: nav-in 800ms var(--ease-out) both;
+}
+
+.list > li:nth-child(1) { animation-delay: 80ms; }
+.list > li:nth-child(2) { animation-delay: 130ms; }
+.list > li:nth-child(3) { animation-delay: 180ms; }
+.list > li:nth-child(4) { animation-delay: 230ms; }
+.list > li:nth-child(5) { animation-delay: 280ms; }
+.list > li:nth-child(6) { animation-delay: 330ms; }
+.actions { animation-delay: 380ms; }
+
+@keyframes nav-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.nav {
+  display: none;
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 1.9vw, 2.25rem);
+}
+
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 2.5rem;
+  padding: 0 0.25rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--text-2);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.label {
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.dot {
+  position: absolute;
+  left: 0.25rem;
+  bottom: 0.15rem;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text);
+  transform: scale(0);
+  transition: transform var(--dur-med) var(--ease-out), background-color var(--dur-fast);
+}
+
+.link:hover {
+  color: var(--text);
+}
+
+.link:hover .dot {
+  transform: scale(1);
+}
+
+.active {
+  color: var(--text);
+}
+
+.active .dot {
+  transform: scale(1);
+  background: var(--accent);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.actions .cta {
+  display: none;
+}
+
+/* Mobile toggle */
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-strong);
+  z-index: 2;
+}
+
+.bar {
+  width: 16px;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+.open .bar:nth-child(1) {
+  transform: translateY(3.75px) rotate(45deg);
+}
+
+.open .bar:nth-child(2) {
+  transform: translateY(-3.75px) rotate(-45deg);
+}
+
+/* Drawer */
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: rgba(12, 9, 6, 0.72);
+  backdrop-filter: blur(var(--glass-blur-4)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter: blur(var(--glass-blur-4)) saturate(var(--glass-sat));
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--nav-h);
+  opacity: 0;
+  visibility: hidden;
+  clip-path: inset(0 0 100% 0);
+  transition:
+    clip-path var(--dur-med) var(--ease-out),
+    opacity var(--dur-med) var(--ease-out),
+    visibility 0s linear var(--dur-med);
+}
+
+.open .drawer {
+  opacity: 1;
+  visibility: visible;
+  clip-path: inset(0 0 0 0);
+  transition:
+    clip-path var(--dur-med) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out),
+    visibility 0s;
+}
+
+.drawerInner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  padding-block: var(--space-6) var(--space-7);
+  overflow-y: auto;
+}
+
+.drawerList {
+  display: grid;
+}
+
+.drawerList li {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-med) var(--ease-out),
+    transform var(--dur-med) var(--ease-out);
+  border-bottom: 1px solid var(--border);
+}
+
+.open .drawerList li {
+  opacity: 1;
+  transform: none;
+}
+
+.drawerLink {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: 1.1rem 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: var(--ls-heading);
+  line-height: 1.1;
+  color: var(--text-2);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.drawerLink:hover,
+.drawerActive {
+  color: var(--text);
+}
+
+.drawerActive .num {
+  color: var(--accent);
+}
+
+.drawerFoot {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-6);
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-med) var(--ease-out),
+    transform var(--dur-med) var(--ease-out);
+}
+
+.open .drawerFoot {
+  opacity: 1;
+  transform: none;
+}
+
+.drawerEmail {
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+
+@media (min-width: 1024px) {
+  .nav {
+    display: block;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .actions .cta {
+    display: inline-flex;
+  }
+
+  .toggle,
+  .drawer {
+    display: none;
+  }
+}

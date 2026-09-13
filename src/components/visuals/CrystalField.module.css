@@ -1,0 +1,182 @@
+.svg {
+  --mx: 0;
+  --my: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.layer,
+.dustFar,
+.dustNear {
+  transform-box: view-box;
+  transform-origin: center;
+  /* Three depth effects share one transform:
+       pointer parallax  - nearer layers lead the cursor further
+       scroll depth      - layers separate as the hero hands over (--hp)
+       proximity tilt    - the crystal nearest the cursor reorients a fraction */
+  transform:
+    translate(
+      calc(var(--mx) * var(--depth, 1) * 9px),
+      calc(var(--my) * var(--depth, 1) * 6px + var(--hp, 0) * var(--depth, 1) * 16px)
+    )
+    rotate(calc(var(--near, 0) * 0.6deg));
+  transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* Each crystal drifts on its own amplitude, period, phase and easing, set
+   per element in CrystalField.tsx. Nothing here is shared but the shape of
+   the motion. */
+.layer > g {
+  animation: cf-float var(--fdur, 16s) var(--fease, ease-in-out) var(--fdelay, 0s) infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes cf-float {
+  from {
+    translate: var(--fx1, 0) var(--fy1, -6px);
+    rotate: var(--fr1, -0.6deg);
+  }
+  to {
+    translate: var(--fx2, 0) var(--fy2, 8px);
+    rotate: var(--fr2, 0.6deg);
+  }
+}
+
+/* Light response: as the cursor nears, the crystal's edges catch a little
+   more light. Reflection, not emission. */
+.layer {
+  --near: 0;
+}
+
+.layer polyline,
+.layer polygon {
+  transition:
+    stroke-opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rays {
+  animation: cf-rays 22s ease-in-out infinite alternate;
+  transform-box: view-box;
+  transform-origin: 80% 0%;
+}
+
+.dustNear {
+  animation: cf-dust 40s linear infinite;
+}
+
+.dustFar {
+  animation: cf-dust 70s linear infinite reverse;
+}
+
+@keyframes cf-rays {
+  from {
+    opacity: 0.7;
+    rotate: -1.2deg;
+  }
+  to {
+    opacity: 1;
+    rotate: 1.2deg;
+  }
+}
+
+@keyframes cf-dust {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 -40px;
+  }
+}
+
+/* Product tiles are stillness in the rhythm, and 16 extra animated groups
+   would spend the interaction budget on the least important crystals.
+   Their compositions stay static. */
+.product .layer,
+.product .dustFar,
+.product .dustNear {
+  transition: none;
+  will-change: auto;
+  transform: none;
+}
+
+.product .layer > g {
+  animation: none;
+}
+
+/* Mobile keeps the float, at half the travel and with no pointer work.
+   Atmosphere survives; the frame rate does too. */
+@media (max-width: 767px) {
+  /* Desktop lets crystals spill past the viewBox so the composition reads as
+     larger than the screen. On a phone there is no room for that, and drifting
+     shapes would push the page sideways, so the field clips to its own box. */
+  .svg {
+    overflow: hidden;
+  }
+
+  .layer,
+  .dustFar,
+  .dustNear {
+    transform: translate(0, calc(var(--hp, 0) * var(--depth, 1) * 8px));
+    transition: none;
+  }
+
+  .layer > g {
+    animation-duration: calc(var(--fdur, 16s) * 1.25);
+    scale: 1;
+  }
+
+  @keyframes cf-float {
+    from {
+      translate: calc(var(--fx1, 0) * 0.5) calc(var(--fy1, -6px) * 0.5);
+      rotate: calc(var(--fr1, -0.6deg) * 0.6);
+    }
+    to {
+      translate: calc(var(--fx2, 0) * 0.5) calc(var(--fy2, 8px) * 0.5);
+      rotate: calc(var(--fr2, 0.6deg) * 0.6);
+    }
+  }
+
+  .rays,
+  .dustNear,
+  .dustFar {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layer > g {
+    animation: none;
+    translate: none;
+    rotate: none;
+  }
+
+  .layer,
+  .dustFar,
+  .dustNear {
+    transform: none;
+    transition: none;
+  }
+
+  .layer polyline,
+  .layer polygon {
+    transition: none;
+  }
+
+  .layer,
+  .dustFar,
+  .dustNear {
+    transform: none !important;
+  }
+
+  .layer > g,
+  .rays,
+  .dustNear,
+  .dustFar {
+    animation: none;
+  }
+}

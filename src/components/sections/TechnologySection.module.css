@@ -1,0 +1,182 @@
+.section {
+  border-top: 1px solid var(--border);
+}
+
+.diagram {
+  display: none;
+  position: relative;
+  color: var(--text);
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Connection lines: the hovered relationship illuminates, the rest recede.
+   This is the point of the diagram — showing what connects to the core. */
+.edge {
+  stroke: currentColor;
+  stroke-opacity: 0.28;
+  transition: stroke-opacity var(--ix-base) var(--ix-move), stroke-width var(--ix-base) var(--ix-move);
+}
+
+.edgeOn {
+  stroke: var(--accent);
+  stroke-opacity: 1;
+  stroke-width: 1.6;
+}
+
+.edgeOff {
+  stroke-opacity: 0.1;
+}
+
+.dot {
+  fill: var(--bg);
+  stroke: currentColor;
+  stroke-opacity: 0.7;
+  transition: r var(--ix-base) var(--ix-move), stroke-opacity var(--ix-base) var(--ix-move), fill var(--ix-base) var(--ix-move);
+}
+
+.dotOn {
+  fill: var(--accent);
+  stroke: var(--accent);
+  stroke-opacity: 1;
+}
+
+.dotOff {
+  stroke-opacity: 0.25;
+}
+
+.nodeOn {
+  --glass-tint: var(--glass-accent-tint);
+  transform: translate(var(--nx, 0), var(--ny, 0)) scale(1.03);
+}
+
+.nodeOff {
+  opacity: 0.45;
+}
+
+.node {
+  transition: opacity var(--ix-base) var(--ix-move), transform var(--ix-base) var(--ix-move);
+  cursor: default;
+}
+
+.coreOn {
+  --glass-tint: var(--glass-tint-4);
+}
+
+.labels {
+  position: absolute;
+  inset: 0;
+}
+
+.core,
+.node {
+  position: absolute;
+  display: grid;
+  gap: 0.2rem;
+  transform: translate(-50%, -50%);
+}
+
+.core {
+  text-align: center;
+  padding: 0.9rem 1.2rem;
+  border: 0;
+  border-radius: 12px;
+  min-width: 12rem;
+}
+
+.core strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.node {
+  padding: 0.6rem 0.85rem;
+  border: 0;
+  border-radius: 10px;
+  min-width: 11rem;
+}
+
+.node strong {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.note {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+/* Label placement relative to its anchor point (outside the ring) */
+.node_left {
+  --nx: calc(-100% - 1rem);
+  --ny: -50%;
+  transform: translate(var(--nx), var(--ny));
+}
+
+.node_right {
+  --nx: 1rem;
+  --ny: -50%;
+  transform: translate(var(--nx), var(--ny));
+}
+
+.node_top {
+  --nx: -50%;
+  --ny: calc(-100% - 1rem);
+  transform: translate(var(--nx), var(--ny));
+}
+
+.node_bottom {
+  --nx: -50%;
+  --ny: 1rem;
+  transform: translate(var(--nx), var(--ny));
+}
+
+/* Mobile list */
+.list {
+  display: grid;
+  border-top: 1px solid var(--border);
+}
+
+.listCore,
+.listItem {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: var(--space-3);
+  align-items: baseline;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.listCore strong,
+.listItem strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.listCore {
+  color: var(--accent);
+}
+
+.listCore strong {
+  color: var(--text);
+}
+
+@media (min-width: 1024px) {
+  .diagram {
+    display: block;
+  }
+
+  .list {
+    display: none;
+  }
+}

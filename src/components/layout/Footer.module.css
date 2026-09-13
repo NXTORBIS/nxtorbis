@@ -1,0 +1,167 @@
+.footer {
+  border-top: 1px solid var(--border);
+  padding-block: clamp(3.5rem, 7vw, 6rem) var(--space-6);
+  background: var(--bg);
+}
+
+.top {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.brand {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+  max-width: 40ch;
+}
+
+.logo {
+  display: inline-flex;
+  width: fit-content;
+}
+
+.desc {
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+}
+
+.caps {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-7) var(--space-5);
+}
+
+.col ul {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.colTitle {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: var(--space-4);
+}
+
+.link {
+  position: relative;
+  display: inline-block;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  transition: color var(--dur-fast) var(--ease-out), transform var(--dur-med) var(--ease-out);
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .link:hover {
+    color: var(--text);
+    transform: translateX(3px);
+  }
+
+  .link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+.top {
+  position: relative;
+}
+
+.toTop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.toTop svg {
+  transform: rotate(-90deg);
+  transition: transform var(--dur-med) var(--ease-out);
+}
+
+.toTop:hover {
+  color: var(--text);
+}
+
+.toTop:hover svg {
+  transform: rotate(-90deg) translateX(3px);
+}
+
+.address {
+  font-style: normal;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  display: grid;
+  gap: 0.15rem;
+  padding-top: 0.35rem;
+}
+
+.mapLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--fs-sm);
+  color: var(--text);
+  margin-top: 0.35rem;
+}
+
+.mapLink:hover {
+  color: var(--accent);
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.copy,
+.meta {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+@media (min-width: 768px) {
+  .cols {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .top {
+    grid-template-columns: 4fr 8fr;
+  }
+}

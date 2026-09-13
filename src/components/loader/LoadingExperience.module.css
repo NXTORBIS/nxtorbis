@@ -1,0 +1,628 @@
+/* ==========================================================================
+   The entrance — the first scene of the site.
+
+   Staging is additive. Each stage adds a class that is never removed, so a
+   stage change can only ever start an animation, never restart one. The exit
+   rules live at the very end of this file: they share specificity with the
+   entrance rules and win on order, which makes the hand-off deterministic
+   rather than a cascade accident.
+
+   Everything animated here is opacity or transform. Nothing in this layer
+   triggers layout.
+   ========================================================================== */
+
+/* Registered so a readiness milestone landing *moves* the frame instead of
+   snapping it. The target is always the real value; only the travel is eased. */
+@property --entry-p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.entry {
+  --entry-p: 0;
+  --lx: 0; /* pointer, -1..1 */
+  --ly: 0;
+  --amb: 0; /* ambient light level, raised stage by stage */
+
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  overflow: hidden;
+  background: var(--bg);
+  contain: layout paint;
+  transition: --entry-p 520ms var(--ix-enter);
+}
+
+/* Shown only when the boot script says this is a first entry. Without
+   JavaScript the class is never set, so the site is simply itself. */
+:global(html.entry-active) .entry {
+  display: block;
+}
+
+/* ------------------------------------------------------------- ambient -- */
+.ground {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+}
+
+/* Warm key light, following the pointer a little. */
+.ground::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  background: radial-gradient(
+    46% 40% at calc(50% + var(--lx) * 3%) calc(45% + var(--ly) * 3%),
+    rgba(237, 177, 102, 0.16),
+    rgba(150, 88, 26, 0.07) 42%,
+    transparent 72%
+  );
+  opacity: var(--amb);
+  transition: opacity 1100ms var(--ix-enter);
+}
+
+/* Low warm floor, so the scene sits on something. */
+.ground::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(80% 55% at 50% 118%, rgba(140, 82, 26, 0.22), transparent 62%);
+  opacity: var(--amb);
+  transition: opacity 1400ms var(--ix-enter);
+}
+
+/* -------------------------------------------------------------- glass --- */
+.fieldWrap {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.05);
+  transition:
+    opacity 1600ms var(--ix-enter),
+    transform 2000ms var(--ix-enter);
+}
+
+/* ------------------------------------------------------- architecture --- */
+.arch {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 900ms var(--ix-enter);
+  color: rgba(255, 226, 178, 0.22);
+}
+
+.rail,
+.datum,
+.ticks,
+.bracket,
+.node {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.rail {
+  top: 12%;
+  bottom: 12%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, currentColor 14%, currentColor 86%, transparent);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+}
+
+.railL { left: 9.5%; }
+.railR { right: 9.5%; }
+
+.datum {
+  left: 6%;
+  right: 6%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, currentColor 10%, currentColor 90%, transparent);
+  transform: scaleX(0);
+}
+
+.datumT {
+  top: 17%;
+  transform-origin: 0 50%;
+}
+
+.datumB {
+  bottom: 17%;
+  transform-origin: 100% 50%;
+}
+
+/* Measured ticks hanging off the top datum — one gradient, no extra nodes. */
+.ticks {
+  top: 17%;
+  left: 9.5%;
+  right: 9.5%;
+  height: 9px;
+  background: repeating-linear-gradient(to right, currentColor 0 1px, transparent 1px 68px);
+  opacity: 0.55;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.bracket {
+  width: 18px;
+  height: 18px;
+  border: 0 solid var(--accent);
+  opacity: 0;
+}
+
+.bTL { top: 17%; left: 9.5%; border-top-width: 1px; border-left-width: 1px; margin: 0 0 0 0; }
+.bTR { top: 17%; right: 9.5%; border-top-width: 1px; border-right-width: 1px; }
+.bBL { bottom: 17%; left: 9.5%; border-bottom-width: 1px; border-left-width: 1px; }
+.bBR { bottom: 17%; right: 9.5%; border-bottom-width: 1px; border-right-width: 1px; }
+
+.node {
+  width: 5px;
+  height: 5px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+}
+
+.n1 { left: 9.5%; top: 31%; }
+.n2 { left: 9.5%; top: 58%; }
+.n3 { left: 9.5%; top: 71%; }
+.n4 { right: 9.5%; top: 27%; margin-right: -2px; }
+.n5 { right: 9.5%; top: 49%; margin-right: -2px; }
+.n6 { right: 9.5%; top: 74%; margin-right: -2px; }
+
+/* --------------------------------------------------------------- brand -- */
+.brand {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: clamp(0.75rem, 1.6vw, 1.25rem);
+  width: min(92vw, 62rem);
+  text-align: center;
+}
+
+.markBox {
+  position: relative;
+  width: clamp(13rem, 30vw, 27rem);
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+}
+
+.frameLayer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 900ms var(--ix-enter);
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.frameTrack {
+  fill: none;
+  stroke: rgba(255, 226, 178, 0.12);
+  stroke-width: 1;
+}
+
+/* The progress line. Drawn length is the real readiness fraction. */
+.frameFill {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--entry-p));
+  opacity: 0.9;
+}
+
+/* A short bright segment riding the leading edge. Brightest mid-travel, gone
+   at both ends, so the frame completes rather than stopping. */
+.frameHead {
+  fill: none;
+  stroke: #fff3dc;
+  stroke-width: 1.6;
+  stroke-dasharray: 0.016 0.984;
+  stroke-dashoffset: calc(0.016 - var(--entry-p));
+  opacity: calc(var(--entry-p) * (1 - var(--entry-p)) * 3.4);
+  filter: drop-shadow(0 0 5px rgba(255, 210, 145, 0.85));
+}
+
+.tick {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 0 solid var(--accent);
+  opacity: 0;
+}
+
+.tick1 { top: 0; left: 0; border-top-width: 1px; border-left-width: 1px; }
+.tick2 { top: 0; right: 0; border-top-width: 1px; border-right-width: 1px; }
+.tick3 { bottom: 0; left: 0; border-bottom-width: 1px; border-left-width: 1px; }
+.tick4 { bottom: 0; right: 0; border-bottom-width: 1px; border-right-width: 1px; }
+
+.mark {
+  position: relative;
+  width: 100%;
+  opacity: 0;
+  filter: blur(16px);
+  transform: scale(1.035);
+}
+
+.markImg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* One light pass, masked to the letterforms. */
+.markLight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    102deg,
+    transparent 40%,
+    rgba(255, 247, 233, 0.92) 49%,
+    rgba(255, 214, 150, 0.42) 55%,
+    transparent 64%
+  );
+  background-size: 260% 100%;
+  background-position: 132% 0;
+  background-repeat: no-repeat;
+  -webkit-mask-image: url("/brand/nxtorbis-wordmark.png");
+  mask-image: url("/brand/nxtorbis-wordmark.png");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.rule {
+  width: 1px;
+  height: clamp(1.25rem, 3vw, 2.25rem);
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition:
+    opacity 700ms var(--ix-enter),
+    transform 800ms var(--ix-enter);
+}
+
+.tag {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-2);
+  opacity: 0;
+  transform: translateY(7px);
+  transition:
+    opacity 900ms var(--ix-enter),
+    transform 900ms var(--ix-enter);
+}
+
+.legal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(1.25rem, 4vh, 2.5rem);
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  opacity: 0;
+  transition: opacity 900ms var(--ix-enter);
+}
+
+/* Sheen and vignette — the same restraint as the rest of the glass system. */
+.veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(255, 248, 236, 0.045), transparent 20%),
+    radial-gradient(124% 92% at 50% 50%, transparent 48%, rgba(5, 4, 3, 0.72) 100%);
+}
+
+/* ==========================================================================
+   Stages. Order matters: these read top to bottom as the sequence plays.
+   ========================================================================== */
+
+/* 01 — IDENTITY: the mark comes up out of the dark. */
+.sIdentity { --amb: 0.3; }
+
+.sIdentity .mark {
+  animation: entry-mark 1250ms var(--ix-enter) both;
+}
+
+.sIdentity .markLight {
+  animation: entry-sweep 1300ms cubic-bezier(0.32, 0, 0.2, 1) 430ms 1 both;
+}
+
+.sIdentity .frameLayer { opacity: 1; }
+
+.sIdentity .tick1 { opacity: clamp(0, (var(--entry-p) - 0.05) * 7, 1); }
+.sIdentity .tick2 { opacity: clamp(0, (var(--entry-p) - 0.3) * 7, 1); }
+.sIdentity .tick3 { opacity: clamp(0, (var(--entry-p) - 0.55) * 7, 1); }
+.sIdentity .tick4 { opacity: clamp(0, (var(--entry-p) - 0.8) * 7, 1); }
+
+/* 02 — MATERIAL: optical glass enters the environment. */
+.sMaterial { --amb: 0.58; }
+
+.sMaterial .fieldWrap {
+  opacity: 0.8;
+  transform: none;
+}
+
+/* 03 — INTELLIGENCE: the technical structure resolves. */
+.sArchitecture { --amb: 0.8; }
+
+.sArchitecture .arch { opacity: 1; }
+
+.sArchitecture .rail {
+  animation: entry-rail 1100ms var(--ix-enter) both;
+}
+
+.sArchitecture .railR { animation-delay: 90ms; }
+
+.sArchitecture .datum {
+  animation: entry-datum 1000ms var(--ix-enter) 180ms both;
+}
+
+.sArchitecture .datumB { animation-delay: 260ms; }
+
+.sArchitecture .ticks {
+  animation: entry-datum 900ms var(--ix-enter) 420ms both;
+}
+
+.sArchitecture .bracket {
+  animation: entry-mark-in 500ms var(--ix-enter) both;
+}
+
+.sArchitecture .bTL { animation-delay: 380ms; }
+.sArchitecture .bTR { animation-delay: 440ms; }
+.sArchitecture .bBL { animation-delay: 500ms; }
+.sArchitecture .bBR { animation-delay: 560ms; }
+
+.sArchitecture .node {
+  animation: entry-node 620ms var(--ix-enter) both;
+}
+
+.sArchitecture .n1 { animation-delay: 560ms; }
+.sArchitecture .n2 { animation-delay: 620ms; }
+.sArchitecture .n3 { animation-delay: 680ms; }
+.sArchitecture .n4 { animation-delay: 600ms; }
+.sArchitecture .n5 { animation-delay: 660ms; }
+.sArchitecture .n6 { animation-delay: 720ms; }
+
+.sArchitecture .rule {
+  opacity: 0.75;
+  transform: none;
+}
+
+.sArchitecture .tag {
+  opacity: 1;
+  transform: none;
+}
+
+/* 04 — ACTIVATION: the environment reaches equilibrium. */
+.sActivation { --amb: 1; }
+
+.sActivation .fieldWrap { opacity: 0.94; }
+
+.sActivation .legal { opacity: 0.55; }
+
+/* ==========================================================================
+   Reveal. The scene opens outward and hands the frame to the homepage.
+   These rules are last on purpose: they share specificity with the stage
+   rules above and take over by order, so the hand-off is deterministic.
+   ========================================================================== */
+
+.exiting {
+  /* The site is usable the instant the reveal starts, not when it finishes. */
+  pointer-events: none;
+  animation: entry-out 780ms var(--ix-exit) 160ms both;
+}
+
+.exiting .frameLayer {
+  animation: entry-frame-out 820ms var(--ix-enter) both;
+}
+
+.exiting .mark {
+  animation: entry-mark-out 700ms var(--ix-enter) 130ms both;
+}
+
+.exiting .arch {
+  animation: entry-arch-out 860ms var(--ix-enter) both;
+}
+
+.exiting .fieldWrap {
+  animation: entry-field-out 950ms var(--ix-enter) both;
+}
+
+.exiting .ground::before {
+  animation: entry-light-out 900ms var(--ix-enter) both;
+}
+
+.exiting .rule,
+.exiting .tag,
+.exiting .legal,
+.exiting .veil {
+  animation: entry-fade-out 420ms var(--ix-exit) both;
+}
+
+/* ------------------------------------------------------------ keyframes -- */
+@keyframes entry-mark {
+  0% {
+    opacity: 0;
+    filter: blur(16px);
+    transform: scale(1.035);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+@keyframes entry-sweep {
+  0% {
+    background-position: 132% 0;
+    opacity: 0;
+  }
+  16% {
+    opacity: 1;
+  }
+  84% {
+    opacity: 1;
+  }
+  100% {
+    background-position: -52% 0;
+    opacity: 0;
+  }
+}
+
+@keyframes entry-rail {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes entry-datum {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes entry-mark-in {
+  from { opacity: 0; }
+  to { opacity: 0.8; }
+}
+
+@keyframes entry-node {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 0.6; transform: none; }
+}
+
+@keyframes entry-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes entry-frame-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.26); }
+}
+
+@keyframes entry-mark-out {
+  from { opacity: 1; transform: none; filter: blur(0); }
+  to { opacity: 0; transform: scale(0.974); filter: blur(0); }
+}
+
+@keyframes entry-arch-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.09); }
+}
+
+@keyframes entry-field-out {
+  from { opacity: 0.94; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.11) translateY(-1.5%); }
+}
+
+@keyframes entry-light-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.7); }
+}
+
+@keyframes entry-fade-out {
+  to { opacity: 0; }
+}
+
+/* ==========================================================================
+   Art direction per breakpoint. Not a proportional shrink: the phone gets a
+   composition of its own — mark first, then atmosphere, then glass.
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+  .ticks { display: none; }
+  .n3,
+  .n6 { display: none; }
+}
+
+@media (max-width: 767px) {
+  .markBox {
+    width: min(74vw, 20rem);
+    padding: clamp(1.35rem, 6vw, 2rem);
+  }
+
+  .rail { top: 9%; bottom: 9%; }
+  .railL { left: 7%; }
+  .railR { right: 7%; }
+  .datum { left: 4%; right: 4%; }
+  .datumT { top: 13%; }
+  .datumB { bottom: 13%; }
+  .bTL, .bTR { top: 13%; }
+  .bBL, .bBR { bottom: 13%; }
+  .bTL, .bBL { left: 7%; }
+  .bTR, .bBR { right: 7%; }
+  .bracket { width: 12px; height: 12px; }
+
+  /* Two nodes are enough at this size; more is noise. */
+  .n2,
+  .n5 { display: none; }
+
+  .legal {
+    font-size: 0.5625rem;
+    letter-spacing: 0.12em;
+    padding: 0 1.5rem;
+  }
+
+  /* Less blur, less depth: the phone runs the same scene on a smaller budget. */
+  .fieldWrap { opacity: 0; }
+  .sMaterial .fieldWrap { opacity: 0.66; }
+  .sActivation .fieldWrap { opacity: 0.78; }
+}
+
+/* ==========================================================================
+   Reduced motion.
+
+   The global rule in globals.css already collapses every animation and
+   transition here to an instant, which is exactly right: the composition
+   still assembles — mark, frame, architecture, glass and light are all
+   present and correct — it simply arrives rather than performs, and leaves
+   the moment the page is ready. Only the pointer light is pinned, since a
+   light that chases the cursor is movement by another name.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .entry {
+    --lx: 0;
+    --ly: 0;
+  }
+
+  /* The global rule collapses every duration but leaves delays alone, which
+     would hold the layer opaque for a beat after its contents had already
+     gone - a black flash where the hand-off should be. Zero the delays too,
+     so the scene leaves in one piece. */
+  .entry,
+  .entry *,
+  .entry *::before,
+  .entry *::after {
+    animation-delay: 0ms !important;
+  }
+}
