@@ -5,7 +5,16 @@ import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
 import { Button } from "@/components/ui/Button";
 import { withOrbisLogo } from "@/components/ui/OrbisLogo";
-import { orbisCopy, orbisDocsUrl, orbisInstallGuide, orbisPlatforms, orbisPortableGuide, orbisReleasesUrl, type OrbisPlatform } from "@/content/orbis";
+import {
+  orbisBundleGuide,
+  orbisCopy,
+  orbisDocsUrl,
+  orbisInstallGuide,
+  orbisPlatforms,
+  orbisPortableGuide,
+  orbisReleasesUrl,
+  type OrbisPlatform,
+} from "@/content/orbis";
 import {
   archLabel,
   buildLabel,
@@ -360,22 +369,73 @@ function PlatformCard({
         </div>
       </dl>
 
-      {build.sha256 && <Checksum value={build.sha256} />}
+      {build.parts ? (
+        <BundleParts build={build} />
+      ) : (
+        <>
+          {build.sha256 && <Checksum value={build.sha256} />}
 
-      <div className={styles.cardCta} data-cta>
-        <Button
-          variant="primary"
-          size="md"
-          arrow
-          loading={busy && activeBuild === build}
-          loadingLabel="Starting download…"
-          onClick={() => onDownload(build)}
-        >
-          {builds.length > 1 && build.kind === "portable" ? "Download portable" : meta.cta}
-        </Button>
-      </div>
-      <p className={styles.fileName}>{build.fileName}</p>
+          <div className={styles.cardCta} data-cta>
+            <Button
+              variant="primary"
+              size="md"
+              arrow
+              loading={busy && activeBuild === build}
+              loadingLabel="Starting download…"
+              onClick={() => onDownload(build)}
+            >
+              {builds.length > 1 && build.kind === "portable" ? "Download portable" : meta.cta}
+            </Button>
+          </div>
+          <p className={styles.fileName}>{build.fileName}</p>
+        </>
+      )}
     </article>
+  );
+}
+
+/**
+ * A download too large for one file is published in numbered parts (GitHub
+ * accepts at most 2 GB per file). Browsers stop a page from starting several
+ * downloads at once, so each part is its own link, followed by how to put the
+ * parts back together.
+ */
+function BundleParts({ build }: { build: OrbisBuild }) {
+  const parts = build.parts ?? [];
+  return (
+    <div className={styles.bundle}>
+      <ol className={styles.partList} data-cta aria-label={`${build.fileName}, ${parts.length} parts`}>
+        {parts.map((p, i) => (
+          <li key={p.fileName}>
+            <a className={styles.partLink} href={p.url} rel="noopener">
+              <span>
+                Part {i + 1} <span className={styles.partOf}>of {parts.length}</span>
+              </span>
+              <span className={styles.partSize}>{formatSize(p.size)}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <p className={styles.bundleNote}>
+        Save every part in one folder, then open the <code>.001</code> file with 7-Zip.{" "}
+        <button type="button" className={styles.linkButton} onClick={openInstallGuide}>
+          How to start
+        </button>
+      </p>
+      {parts.some((p) => p.sha256) && (
+        <details className={styles.partSums}>
+          <summary>SHA-256 of each part</summary>
+          <ul>
+            {parts.map((p) => (
+              <li key={p.fileName}>
+                <span>{p.fileName}</span>
+                <code>{p.sha256 ?? "Not published"}</code>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </div>
   );
 }
 
@@ -409,6 +469,8 @@ export function OrbisInstallation() {
   const guides = latest ? platformsOf(latest).map((p) => p.platform).filter((p) => (orbisInstallGuide[p]?.length ?? 0) > 0) : [];
   const hasPortable = (p: OrbisPlatform) =>
     !!latest?.builds.some((b) => b.platform === p && b.kind === "portable") && (orbisPortableGuide[p]?.length ?? 0) > 0;
+  const bundleOf = (p: OrbisPlatform) =>
+    (orbisBundleGuide[p]?.length ?? 0) > 0 ? (latest?.builds.find((b) => b.platform === p && b.kind === "bundle" && b.parts) ?? null) : null;
 
   useEffect(() => {
     const onOpen = () => setOpen(true);
@@ -473,6 +535,20 @@ export function OrbisInstallation() {
                         <li key={g.title}>
                           <strong>{withOrbisLogo(g.title)}</strong>
                           {withOrbisLogo(g.body)}
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                )}
+                {bundleOf(p) && (
+                  <>
+                    <h3 className={cx(styles.guideTitle, styles.guideTitleNext)}>All-in-One on {orbisPlatforms[p].label}</h3>
+                    <ol className={styles.guideSteps}>
+                      {(orbisBundleGuide[p] ?? []).map((g) => (
+                        <li key={g.title}>
+                          <strong>{withOrbisLogo(g.title)}</strong>
+                          {withOrbisLogo(g.body)}
+                          {g.command && <code className={styles.guideCommand}>{g.command.replaceAll("{file}", bundleOf(p)?.fileName ?? "")}</code>}
                         </li>
                       ))}
                     </ol>

@@ -95,6 +95,40 @@ export const orbisPortableGuide: Partial<Record<OrbisPlatform, { title: string; 
   ],
 };
 
+/**
+ * Steps for the All-in-One download: Orbis, ORION, its models and a private
+ * Python in one zip, published in parts. From the bundle's README.txt and
+ * Start-Orbis.bat. `{file}` in a command is replaced with the joined file name.
+ */
+export const orbisBundleGuide: Partial<Record<OrbisPlatform, { title: string; body: string; command?: string }[]>> = {
+  windows: [
+    { title: "Download every part", body: "Save all the parts in the same folder." },
+    {
+      title: "Extract",
+      body: "Open the first part, the file ending in .001, with 7-Zip and extract it. Without 7-Zip, join the parts first by running this in Command Prompt in that folder, then extract the joined zip:",
+      command: "copy /b {file}.* {file}",
+    },
+    {
+      title: "Start Orbis",
+      body: "Open the extracted folder and double-click Start-Orbis.bat. The first start loads the AI models and can take a few minutes. A minimized window called “ORION - keep this window open” appears on the taskbar, and Orbis opens by itself when ORION is ready.",
+    },
+    { title: "Stop", body: "Close Orbis, then close the ORION window." },
+  ],
+};
+
+/** Requirements for the All-in-One download, from its README.txt and ORION's laptop profile (configs/system/laptop.yaml). */
+export const orbisBundleRequirements: Partial<Record<OrbisPlatform, { label: string; value: string }[]>> = {
+  windows: [
+    { label: "Operating system", value: "Windows 10 or 11, 64-bit" },
+    { label: "Memory", value: "16 GB RAM recommended. The 14B chat model uses about 9 GB." },
+    // Parts total 12.2 GB and the extracted folder is 12.2 GB; the README asks for about 15 GB to run.
+    { label: "Disk space", value: "About 25 GB free to download and extract, and about 15 GB once the parts are deleted." },
+    // llama.cpp CPU build; laptop.yaml records 3.2 tokens per second measured.
+    { label: "Processor", value: "Runs on the processor, no graphics card needed. Replies are slow: about 3 tokens a second on the laptop it was measured on." },
+    { label: "Internet", value: "Only for web search and the browser panel. The AI runs on this PC." },
+  ],
+};
+
 export type OrbisCapabilityId = "ai" | "workspace" | "memory" | "files" | "tools" | "learning" | "voice";
 
 export const orbisCopy = {

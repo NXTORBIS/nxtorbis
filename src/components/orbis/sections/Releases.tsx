@@ -5,7 +5,7 @@ import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
 import { Button } from "@/components/ui/Button";
 import { OrbisLogo, withOrbisLogo } from "@/components/ui/OrbisLogo";
-import { orbisCopy, orbisPlatforms, orbisReleasesUrl, orbisRequirements } from "@/content/orbis";
+import { orbisBundleRequirements, orbisCopy, orbisPlatforms, orbisReleasesUrl, orbisRequirements } from "@/content/orbis";
 import {
   archLabel,
   buildLabel,
@@ -237,6 +237,9 @@ export function OrbisRequirements() {
   const platforms = latest ? platformsOf(latest).map((p) => p.platform).filter((p) => (orbisRequirements[p]?.length ?? 0) > 0) : [];
   const current = platforms.length ? platforms[Math.min(tab, platforms.length - 1)] : null;
   const tabs = platforms.length > 1;
+  // The All-in-One download has its own, heavier requirements: it runs ORION and its models too.
+  const bundleRequirements =
+    current && latest?.builds.some((b) => b.platform === current && b.kind === "bundle" && b.parts) ? (orbisBundleRequirements[current] ?? null) : null;
 
   const onKey = (e: KeyboardEvent<HTMLButtonElement>) => {
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
@@ -289,6 +292,23 @@ export function OrbisRequirements() {
                   <div key={r.label}>
                     <dt>{r.label}</dt>
                     <dd>{withOrbisLogo(r.value)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
+          )}
+
+          {bundleRequirements && (
+            <Reveal className={cx(styles.reqPanel, styles.reqPanelNext)} variant="glass">
+              <h3 className={styles.reqTitle}>All-in-One download</h3>
+              <p className={styles.reqLead}>
+                {withOrbisLogo("Orbis, ORION and its AI models in one download, so ORION doesn’t need to be set up separately.")}
+              </p>
+              <dl className={styles.reqList}>
+                {bundleRequirements.map((r) => (
+                  <div key={r.label}>
+                    <dt>{r.label}</dt>
+                    <dd>{r.value}</dd>
                   </div>
                 ))}
               </dl>
