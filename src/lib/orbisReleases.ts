@@ -22,18 +22,28 @@ import {
  * platform's verified default (see content/orbis).
  */
 
-export type OrbisBuildKind = "installer" | "portable" | "archive";
+export type OrbisBuildKind = "installer" | "portable" | "bundle" | "archive";
+
+/** One numbered piece of a download that is too large for a single file. */
+export type OrbisBuildPart = { fileName: string; size: number; url: string; sha256: string | null };
 
 export type OrbisBuild = {
   platform: OrbisPlatform;
-  /** Installer, portable (runs without installing), or a plain archive. */
+  /** Installer, portable (runs without installing), all-in-one bundle, or a plain archive. */
   kind: OrbisBuildKind;
   arch: string | null;
+  /** The file's name; for a download in parts, the name the parts join back into. */
   fileName: string;
+  /** Bytes; for a download in parts, all parts together. */
   size: number;
   url: string;
   /** SHA-256 as published by GitHub for the asset, when GitHub provides one. */
   sha256: string | null;
+  /**
+   * Set when the download is published in numbered parts (name.zip.001, .002, …)
+   * because GitHub accepts at most 2 GB per file. In order.
+   */
+  parts: OrbisBuildPart[] | null;
 };
 
 export type OrbisNotesBlock = { type: "p"; text: string } | { type: "ul"; items: string[] } | { type: "code"; text: string };
@@ -85,27 +95,29 @@ function platformOf(fileName: string): OrbisPlatform | null {
 }
 
 function kindOf(fileName: string, platform: OrbisPlatform): OrbisBuildKind {
+  if (/all-?in-?one/i.test(fileName)) return "bundle";
   if (/portable/i.test(fileName) || (platform === "windows" && /\.zip$/i.test(fileName))) return "portable";
   if (/\.(exe|msi|msix|appx|dmg|pkg|deb|rpm|appimage|snap|flatpak)$/i.test(fileName)) return "installer";
   return "archive";
 }
 
-const KIND_ORDER: Record<OrbisBuildKind, number> = { installer: 0, portable: 1, archive: 2 };
+const KIND_ORDER: Record<OrbisBuildKind, number> = { installer: 0, portable: 1, bundle: 2, archive: 3 };
+const KIND_LABEL: Record<OrbisBuildKind, string> = { installer: "Installer", portable: "Portable", bundle: "All-in-One", archive: "Archive" };
 
 function extensionOf(fileName: string): string {
   const m = /\.(tar\.gz|tar\.xz|[a-z0-9]+)$/i.exec(fileName);
   return m ? `.${m[1].toLowerCase()}` : "";
 }
 
-/** "Installer (.exe)", "Portable (.zip)" — plus the architecture when siblings differ by it. */
+/** "Installer (.exe)", "All-in-One (.zip, 7 parts)" — plus the architecture when siblings differ by it. */
 export function buildLabel(build: OrbisBuild, siblings: OrbisBuild[]): string {
   const kinds = new Set(siblings.map((s) => s.kind));
   const arches = new Set(siblings.filter((s) => s.kind === build.kind).map((s) => s.arch));
-  const kind = build.kind === "installer" ? "Installer" : build.kind === "portable" ? "Portable" : "Archive";
-  const parts: string[] = [];
-  if (kinds.size > 1 || siblings.length === 1) parts.push(`${kind} (${extensionOf(build.fileName)})`);
-  if (arches.size > 1) parts.push(archLabel(build.platform, build.arch) ?? "");
-  return parts.filter(Boolean).join(" · ") || build.fileName;
+  const detail = build.parts ? `${extensionOf(build.fileName)}, ${build.parts.length} parts` : extensionOf(build.fileName);
+  const bits: string[] = [];
+  if (kinds.size > 1 || siblings.length === 1) bits.push(`${KIND_LABEL[build.kind]} (${detail})`);
+  if (arches.size > 1) bits.push(archLabel(build.platform, build.arch) ?? "");
+  return bits.filter(Boolean).join(" · ") || build.fileName;
 }
 
 function archOf(fileName: string, platform: OrbisPlatform): string | null {
@@ -122,14 +134,19 @@ export function archLabel(platform: OrbisPlatform, arch: string | null): string 
   return arch === "x64" ? "x64 (64-bit)" : arch === "x86" ? "x86 (32-bit)" : arch === "arm64" ? "ARM64" : arch;
 }
 
-/** A download may only start from the trusted release prefix, for the file it names. */
-export function isTrustedBuild(build: OrbisBuild): boolean {
+function isTrustedFile(url: string, fileName: string, size: number): boolean {
   try {
-    const u = new URL(build.url);
-    return build.url.startsWith(orbisTrustedDownloadPrefix) && u.protocol === "https:" && decodeURIComponent(u.pathname).endsWith(`/${build.fileName}`) && build.size > 0;
+    const u = new URL(url);
+    return url.startsWith(orbisTrustedDownloadPrefix) && u.protocol === "https:" && decodeURIComponent(u.pathname).endsWith(`/${fileName}`) && size > 0;
   } catch {
     return false;
   }
+}
+
+/** A download may only start from the trusted release prefix, for the file it names — every part of it, for a download in parts. */
+export function isTrustedBuild(build: OrbisBuild): boolean {
+  if (build.parts) return build.parts.length > 1 && build.parts.every((p) => isTrustedFile(p.url, p.fileName, p.size));
+  return isTrustedFile(build.url, build.fileName, build.size);
 }
 
 /** Minimal Markdown reader for release notes: headings, paragraphs, lists and code blocks. */
@@ -204,15 +221,53 @@ export function releaseSummary(release: OrbisRelease): string | null {
   return null;
 }
 
+function digestOf(asset: GithubAsset): string | null {
+  const m = asset.digest ? /^sha256:([0-9a-f]{64})$/i.exec(asset.digest) : null;
+  return m ? m[1].toLowerCase() : null;
+}
+
+/** name.zip.001 → ["name.zip", "001"] */
+const PART = /^(.+)\.(\d{3})$/;
+
+/**
+ * Joins numbered parts into one build. Shown only when the set is complete:
+ * numbered from 001 with none missing, and a last part smaller than the first.
+ * A split cuts equal pieces and leaves the remainder for last, so while the
+ * parts are still being uploaded the download stays hidden.
+ */
+function joinParts(base: string, pieces: { index: number; asset: GithubAsset }[]): OrbisBuild | null {
+  const platform = platformOf(base);
+  if (!platform || pieces.length < 2) return null;
+  const sorted = [...pieces].sort((a, b) => a.index - b.index);
+  if (!sorted.every((p, i) => p.index === i + 1)) return null;
+  const parts = sorted.map(({ asset }) => ({ fileName: asset.name, size: asset.size, url: asset.browser_download_url, sha256: digestOf(asset) }));
+  if (parts[parts.length - 1].size >= parts[0].size) return null;
+  return {
+    platform,
+    kind: kindOf(base, platform),
+    arch: archOf(base, platform),
+    fileName: base,
+    size: parts.reduce((sum, p) => sum + p.size, 0),
+    url: parts[0].url,
+    sha256: null,
+    parts,
+  };
+}
+
 function normalize(raw: GithubRelease[]): OrbisRelease[] {
   return raw
     .filter((r) => !r.draft && !r.prerelease && r.published_at)
     .map((r) => {
       const builds: OrbisBuild[] = [];
+      const pieces = new Map<string, { index: number; asset: GithubAsset }[]>();
       for (const asset of r.assets ?? []) {
+        const part = PART.exec(asset.name);
+        if (part) {
+          pieces.set(part[1], [...(pieces.get(part[1]) ?? []), { index: Number(part[2]), asset }]);
+          continue;
+        }
         const platform = platformOf(asset.name);
         if (!platform) continue;
-        const digest = asset.digest ? /^sha256:([0-9a-f]{64})$/i.exec(asset.digest) : null;
         const build: OrbisBuild = {
           platform,
           kind: kindOf(asset.name, platform),
@@ -220,9 +275,14 @@ function normalize(raw: GithubRelease[]): OrbisRelease[] {
           fileName: asset.name,
           size: asset.size,
           url: asset.browser_download_url,
-          sha256: digest ? digest[1].toLowerCase() : null,
+          sha256: digestOf(asset),
+          parts: null,
         };
         if (isTrustedBuild(build)) builds.push(build);
+      }
+      for (const [base, list] of pieces) {
+        const build = joinParts(base, list);
+        if (build && isTrustedBuild(build)) builds.push(build);
       }
       builds.sort((a, b) => KIND_ORDER[a.kind] - KIND_ORDER[b.kind]);
       return {
@@ -330,6 +390,7 @@ export function useOrbisReleases() {
 
 export function formatSize(bytes: number): string {
   const mb = bytes / 1048576;
+  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
   return mb >= 1 ? `${Math.round(mb)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
