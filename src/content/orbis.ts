@@ -58,8 +58,8 @@ export const orbisRequirements: Partial<Record<OrbisPlatform, { label: string; v
   windows: [
     { label: "Operating system", value: "Windows 10 or 11" },
     { label: "Architecture", value: "x64 (64-bit)" },
-    // src/main/nim.ts: every chat goes to ORION at 127.0.0.1:8765; there are no cloud models.
-    { label: "AI engine", value: "ORION running on the same computer. Orbis connects to it locally." },
+    // Since 0.3.0, src/main/nim.ts sends chats to Groq's cloud API (GROQ_BASE_URL); nothing needs to run locally.
+    { label: "Internet", value: "Required. Orbis’s AI runs in the cloud, so nothing else needs to be installed or running." },
   ],
 };
 
@@ -72,12 +72,14 @@ export const orbisInstallGuide: Partial<Record<OrbisPlatform, { title: string; b
       body: "Open the Orbis installer and choose where to install. The installer isn’t code-signed yet, so Windows SmartScreen may show a notice — select More info, then Run anyway.",
     },
     {
-      title: "Start ORION",
-      body: "This release talks only to ORION on your own computer, so make sure ORION is running before you open Orbis.",
+      // Same appId (ai.nxtorbis.desktop) across versions, so a newer installer upgrades in place and keeps user data.
+      title: "Already have Orbis?",
+      body: "Run the new installer over your current version. It upgrades in place and keeps your chats and settings.",
     },
     {
+      // WelcomeExperience.tsx: the first launch asks for a name; chats need an internet connection.
       title: "Enter Orbis",
-      body: "Launch Orbis from the Start menu and begin.",
+      body: "Launch Orbis from the Start menu, tell it your name the first time, and begin. Make sure you’re connected to the internet.",
     },
   ],
 };
