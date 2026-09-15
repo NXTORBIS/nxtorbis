@@ -59,7 +59,7 @@ export const orbisRequirements: Partial<Record<OrbisPlatform, { label: string; v
     { label: "Operating system", value: "Windows 10 or 11" },
     { label: "Architecture", value: "x64 (64-bit)" },
     // Since 0.3.0, src/main/nim.ts sends chats to Groq's cloud API (GROQ_BASE_URL); nothing needs to run locally.
-    { label: "Internet", value: "Required. Orbis’s AI runs in the cloud, so nothing else needs to be installed or running." },
+    { label: "Internet", value: "Required. The AI runs in the cloud, so nothing else needs to be installed or running." },
   ],
 };
 
