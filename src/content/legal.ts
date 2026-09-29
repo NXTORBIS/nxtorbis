@@ -56,7 +56,6 @@ export const privacyPolicy: PolicySection[] = [
       "Orbis answers through an AI service in the cloud, so the text it needs to answer leaves your computer.",
       {
         list: [
-          "Chatting sends your recent messages in that conversation to Groq.",
           "Asking Orbis to act on a page sends what it needs from that page, so it can read the page and carry out what you asked.",
           "Researching a question sends the search words to a search engine, such as DuckDuckGo or Google, and reads the pages it finds.",
           "Typing in the address bar asks Google's suggestion service for suggestions as you type.",
