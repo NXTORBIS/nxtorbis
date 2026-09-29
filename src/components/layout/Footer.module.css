@@ -165,3 +165,16 @@
     grid-template-columns: 4fr 8fr;
   }
 }
+
+.legal {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 4px;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.legal:hover {
+  color: var(--text);
+}

@@ -1,0 +1,47 @@
+.policy {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+.block + .block {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.heading {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  letter-spacing: -0.02em;
+}
+
+.text,
+.list {
+  margin: 0 0 var(--space-4);
+  line-height: 1.75;
+  color: var(--text-2);
+}
+
+.list {
+  display: grid;
+  gap: 0.6rem;
+  padding-left: 1.2rem;
+}
+
+.text:last-child,
+.list:last-child {
+  margin-bottom: 0;
+}
+
+.contact {
+  margin: clamp(2.5rem, 5vw, 3.5rem) 0 0;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.contact a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

@@ -124,6 +124,9 @@ export function Footer() {
 
         <div className={styles.bottom}>
           <p className={styles.copy}>{company.copyright}</p>
+          <Link href="/privacy" className={styles.legal}>
+            Privacy Policy
+          </Link>
           <a href="#main" className={styles.toTop}>
             Back to top <ArrowRight size={14} />
           </a>
