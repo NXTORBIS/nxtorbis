@@ -53,7 +53,7 @@ export const privacyPolicy: PolicySection[] = [
   {
     heading: "The Orbis app",
     blocks: [
-      "Orbis answers through an AI service in the cloud, so the text it needs to answer leaves your computer. It goes to Groq, which runs the models, and not to us — we never receive your chats.",
+      "Orbis answers through an AI service in the cloud, so the text it needs to answer leaves your computer.",
       {
         list: [
           "Chatting sends your recent messages in that conversation to Groq.",
