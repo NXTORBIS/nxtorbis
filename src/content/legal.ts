@@ -53,14 +53,17 @@ export const privacyPolicy: PolicySection[] = [
   {
     heading: "The Orbis app",
     blocks: [
-      "Orbis runs on your computer and keeps your chats there. This build answers only through ORION, an AI server running on the same computer, so your conversations are not sent to us or to any cloud AI service.",
+      "Orbis answers through an AI service in the cloud, so the text it needs to answer leaves your computer. It goes to Groq, which runs the models, and not to us — we never receive your chats.",
       {
         list: [
-          "Web search is off unless you turn it on. While it is on, the message you send is passed to DuckDuckGo to fetch results.",
-          "The browser panel loads the websites you open in it, exactly as a browser would.",
-          "Downloading Orbis, including its parts, happens from GitHub.",
+          "Chatting sends your recent messages in that conversation to Groq.",
+          "Asking Orbis to act on a page sends what it needs from that page, so it can read the page and carry out what you asked.",
+          "Researching a question sends the search words to a search engine, such as DuckDuckGo or Google, and reads the pages it finds.",
+          "Typing in the address bar asks Google's suggestion service for suggestions as you type.",
+          "Browsing loads the sites you open, exactly as any browser does.",
         ],
       },
+      "Your chats, tabs, history, bookmarks, downloads, profiles and settings are kept in files on your own computer, not on a server of ours. Deleting a profile in Orbis deletes its data from your computer.",
       "The app sends us no usage data, and it has no analytics or crash reporting.",
     ],
   },
