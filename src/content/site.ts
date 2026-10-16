@@ -147,13 +147,13 @@ export type Product = {
   index: string;
   slug: string;
   name: string;
-  positioning: "AI-powered enhancement" | "AI + Blockchain";
+  positioning: "AI-powered enhancement" | "AI + Blockchain" | "Customer relationship management";
   technologies: string[];
   /** One high-level sentence. Must not describe functionality. */
   intro: string;
   /** Optional context drawn from the existing site. */
   context?: string;
-  visual: "advocate" | "birthday" | "review" | "genuine";
+  visual: "advocate" | "birthday" | "review" | "genuine" | "brixora";
   hasPlans?: boolean;
 };
 
@@ -200,6 +200,19 @@ export const products: Product[] = [
     intro:
       "A product developed to support the authenticity of products, combining AI with blockchain for data integrity and trust.",
     visual: "genuine",
+  },
+  {
+    index: "05",
+    slug: "brixora360",
+    name: "Brixora360",
+    positioning: "Customer relationship management",
+    technologies: ["Software"],
+    // Taken from the product itself: brixora360.com signs in to "Brixora360 CRM",
+    // carries the line "Build Smarter. Grow Faster." and names NxtOrbis as its maker.
+    intro:
+      "A customer relationship management product developed by NxtOrbis® — built smarter, to grow faster.",
+    context: "Accounts are provided by NxtOrbis®; there is no public sign-up.",
+    visual: "brixora",
   },
 ];
 
@@ -324,7 +337,7 @@ export const about = {
   team:
     "At our core, we are a team of experienced developers, designers and strategists who believe in using technology to drive meaningful impact — whether that means using AI for automation, strengthening security or optimising business processes.",
   productsLine:
-    "Alongside client work, we develop our own software products: Advocate Office Management System, Birthday Reminder App, True Review System and Genuine Product Checker.",
+    "Alongside client work, we develop our own software products: Advocate Office Management System, Birthday Reminder App, True Review System, Genuine Product Checker and Brixora360.",
   vision:
     "To be a global leader in software product innovation, delivering cutting-edge solutions that empower businesses and individuals to achieve more through technology.",
   mission: [
@@ -400,7 +413,7 @@ export const seo = {
   products: {
     title: "Software Products | NxtOrbis®",
     description:
-      "Software products developed by NxtOrbis®: Advocate Office Management System, Birthday Reminder App, True Review System and Genuine Product Checker.",
+      "Software products developed by NxtOrbis®: Advocate Office Management System, Birthday Reminder App, True Review System, Genuine Product Checker and Brixora360.",
   },
   pricing: {
     title: "Pricing | NxtOrbis®",

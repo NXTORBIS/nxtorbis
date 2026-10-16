@@ -13,6 +13,7 @@ const HUES: Record<Product["visual"], { hues: Array<"gold" | "champagne" | "copp
   birthday: { hues: ["copper", "amber", "gold"], seed: 23 },
   review: { hues: ["champagne", "steel", "gold"], seed: 37 },
   genuine: { hues: ["amber", "gold", "steel"], seed: 53 },
+  brixora: { hues: ["steel", "champagne", "amber"], seed: 71 },
 };
 
 export function ProductVisual({ product, className, large = false }: { product: Product; className?: string; large?: boolean }) {
