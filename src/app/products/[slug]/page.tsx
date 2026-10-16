@@ -70,9 +70,13 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
                   <>
                     Built on software, <span className="t-serif">AI</span> and blockchain.
                   </>
-                ) : (
+                ) : product.positioning === "AI-powered enhancement" ? (
                   <>
                     Software, enhanced <span className="t-serif">with</span> AI.
+                  </>
+                ) : (
+                  <>
+                    Software for the <span className="t-serif">relationships</span> a business runs on.
                   </>
                 )}
               </h2>
