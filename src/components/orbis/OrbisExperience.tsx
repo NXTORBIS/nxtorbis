@@ -1,10 +1,13 @@
 "use client";
 
 import { BackgroundParticles } from "./BackgroundParticles";
+import { Spotlight } from "./Spotlight";
+import { Spine } from "./Spine";
 import { OrbStage } from "./orb/OrbStage";
 import { OrbisHero, OrbisIntro } from "./sections/Opening";
 import { OrbisConnected } from "./sections/Connected";
 import { OrbisFeatures, OrbisMore } from "./sections/Features";
+import { OrbisGathering } from "./sections/Gathering";
 import { OrbisDownload, OrbisInstallation } from "./sections/Download";
 import { OrbisLatestRelease, OrbisReleaseHistory, OrbisRequirements } from "./sections/Releases";
 import { OrbisEcosystem, OrbisFinal } from "./sections/Closing";
@@ -22,12 +25,15 @@ export function OrbisExperience() {
     <div className={styles.page}>
       <div className={styles.atmosphere} aria-hidden="true" />
       <BackgroundParticles />
+      <Spotlight />
+      <Spine />
       <OrbStage>
         <div className={styles.content}>
           <OrbisHero />
           <OrbisIntro />
           <OrbisConnected />
           <OrbisFeatures />
+          <OrbisGathering />
           <OrbisMore />
           <OrbisDownload />
           <OrbisLatestRelease />

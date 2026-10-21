@@ -156,6 +156,10 @@ export const orbisCopy = {
     upcomingNote: "Six of these arrive in Orbis 5.0.0, which is on the way. Today’s download is {version}, with the browser and Orion.",
     upcomingBadge: "In 5.0.0",
   },
+  gathering: {
+    heading: "All of it, at once.",
+    text: "Eight worlds, and one window to keep them in.",
+  },
   privacy: {
     heading: "It all stays here.",
     text: "Orbis keeps what you do on your own computer, and gives you the locks to keep it there.",

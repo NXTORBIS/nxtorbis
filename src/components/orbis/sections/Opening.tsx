@@ -8,6 +8,7 @@ import { withOrbisLogo } from "@/components/ui/OrbisLogo";
 import { orbisCopy, orbisPlatforms } from "@/content/orbis";
 import { useOrbisReleases } from "@/lib/orbisReleases";
 import { OrbSlot } from "../orb/OrbStage";
+import { HeroAssembly } from "./HeroAssembly";
 import { goToDownload, platformsOf, scrollToId } from "../shared";
 import styles from "../Orbis.module.css";
 
@@ -57,6 +58,7 @@ export function OrbisHero() {
         </div>
 
         <div className={styles.heroOrb}>
+          <HeroAssembly />
           <OrbSlot state="hero" interactive />
         </div>
 
