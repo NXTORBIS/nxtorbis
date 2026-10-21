@@ -201,6 +201,25 @@ export const orbisCopy = {
   },
 } as const;
 
+/**
+ * The release that is coming, shown beside the downloads until it is published.
+ *
+ * It carries no date and no button, because there is nothing to download yet:
+ * the page reads the published releases from GitHub, and this card disappears
+ * on its own the moment a 5.x release appears there. The lines are the worlds
+ * named in the app's capability registry, not a roadmap.
+ */
+export const orbisUpcoming = {
+  /** The card is shown while the newest published release is older than this major. */
+  major: 5,
+  version: "5.0.0",
+  label: "Upcoming",
+  title: "Orbis 5.0.0",
+  text: "The browser grows worlds of its own.",
+  brings: ["Toolkit", "Courses", "Chess World", "Arena", "OrbisEye", "Cosmos"],
+  note: "Not released yet. When it is, it appears here as a download.",
+} as const;
+
 export const orbisCapabilities: { id: OrbisCapabilityId; label: string; description: string; upcoming?: boolean }[] = [
   { id: "browser", label: "Browser", description: "Tabs, workspaces, downloads and permissions, with ads blocked." },
   { id: "ai", label: "Orion", description: "Ask about the page you are on, and have it answered with sources." },
