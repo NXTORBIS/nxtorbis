@@ -150,7 +150,12 @@ export const orbisCopy = {
     detail: "Ask about the page you are on. Then step into the Toolkit, Courses, Chess, the Arena, Earth and the universe.",
   },
   connected: { heading: "Eight worlds, one window." },
-  features: { heading: "What is inside." },
+  features: {
+    heading: "What is inside.",
+    /** Shown while the published build is older than the release these worlds arrive in. */
+    upcomingNote: "Six of these arrive in Orbis 5.0.0, which is on the way. Today’s download is {version}, with the browser and Orion.",
+    upcomingBadge: "In 5.0.0",
+  },
   privacy: {
     heading: "It all stays here.",
     text: "Orbis keeps what you do on your own computer, and gives you the locks to keep it there.",
@@ -196,18 +201,18 @@ export const orbisCopy = {
   },
 } as const;
 
-export const orbisCapabilities: { id: OrbisCapabilityId; label: string; description: string }[] = [
+export const orbisCapabilities: { id: OrbisCapabilityId; label: string; description: string; upcoming?: boolean }[] = [
   { id: "browser", label: "Browser", description: "Tabs, workspaces, downloads and permissions, with ads blocked." },
   { id: "ai", label: "Orion", description: "Ask about the page you are on, and have it answered with sources." },
-  { id: "toolkit", label: "Toolkit", description: "Thousands of calculators, converters and lab tools, offline." },
-  { id: "courses", label: "Courses", description: "Structured learning, with what you know actually measured." },
-  { id: "chess", label: "Chess", description: "Play the engine, study your games and follow live tournaments." },
-  { id: "arena", label: "Arena", description: "Live football and Formula 1, with scores, tables and timing." },
-  { id: "eye", label: "OrbisEye", description: "A live 3D Earth: aircraft, ships, satellites and earthquakes." },
-  { id: "cosmos", label: "Cosmos", description: "A real-time 3D universe, from the Solar System to the Milky Way." },
+  { upcoming: true, id: "toolkit", label: "Toolkit", description: "Thousands of calculators, converters and lab tools, offline." },
+  { upcoming: true, id: "courses", label: "Courses", description: "Structured learning, with what you know actually measured." },
+  { upcoming: true, id: "chess", label: "Chess", description: "Play the engine, study your games and follow live tournaments." },
+  { upcoming: true, id: "arena", label: "Arena", description: "Live football and Formula 1, with scores, tables and timing." },
+  { upcoming: true, id: "eye", label: "OrbisEye", description: "A live 3D Earth: aircraft, ships, satellites and earthquakes." },
+  { upcoming: true, id: "cosmos", label: "Cosmos", description: "A real-time 3D universe, from the Solar System to the Milky Way." },
 ];
 
-export const orbisFeatures: { id: OrbisCapabilityId; title: string; copy: string }[] = [
+export const orbisFeatures: { id: OrbisCapabilityId; title: string; copy: string; upcoming?: boolean }[] = [
   {
     id: "browser",
     title: "Browser",
@@ -220,31 +225,37 @@ export const orbisFeatures: { id: OrbisCapabilityId; title: string; copy: string
   },
   {
     id: "toolkit",
+    upcoming: true,
     title: "Toolkit",
     copy: "Over two thousand calculators, converters and lab tools, from engineering to chemistry — all of them working on this computer, with or without a connection.",
   },
   {
     id: "courses",
+    upcoming: true,
     title: "Courses",
     copy: "Structured learning that measures what you actually know, instead of how many videos you have watched.",
   },
   {
     id: "chess",
+    upcoming: true,
     title: "Chess World",
     copy: "Play the engine, study your own games move by move, train against your weaknesses, and follow live tournaments.",
   },
   {
     id: "arena",
+    upcoming: true,
     title: "Arena",
     copy: "Live football and Formula 1: scores, fixtures, tables, form, the race calendar, and lap and sector timing.",
   },
   {
     id: "eye",
+    upcoming: true,
     title: "OrbisEye",
     copy: "A live 3D Earth. Aircraft in the air, ships at sea, satellites overhead and earthquakes as they are recorded.",
   },
   {
     id: "cosmos",
+    upcoming: true,
     title: "Cosmos",
     copy: "A real-time 3D universe, simulated to scale — the Solar System, the stars around it, and the Milky Way beyond.",
   },

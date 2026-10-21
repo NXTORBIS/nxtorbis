@@ -532,6 +532,28 @@
   margin-bottom: clamp(1rem, 3vw, 2rem);
 }
 
+/* What is not in the build you can download yet. */
+.upcomingNote {
+  max-width: 44ch;
+  margin: 0 auto;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ob-text-2);
+}
+
+.upcomingBadge {
+  justify-self: start;
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(237, 177, 102, 0.45);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ob-accent);
+}
+
 .feature {
   position: relative;
   padding-block: clamp(3.5rem, 9vw, 7.5rem);

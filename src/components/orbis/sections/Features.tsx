@@ -5,6 +5,7 @@ import { cx } from "@/lib/cx";
 import { Reveal } from "@/lib/Reveal";
 import { withOrbisLogo } from "@/components/ui/OrbisLogo";
 import { orbisCapabilities, orbisCopy, orbisFeatures, type OrbisCapabilityId } from "@/content/orbis";
+import { useOrbisReleases } from "@/lib/orbisReleases";
 import { OrbSlot } from "../orb/OrbStage";
 import { useInView } from "../shared";
 import { FeatureVisual } from "./FeatureVisuals";
@@ -17,21 +18,40 @@ import styles from "../Orbis.module.css";
  * here shows data, and nothing claims an interface Orbis does not have.
  */
 export function OrbisFeatures() {
+  // Six of the eight arrive in 5.0.0. While the published release is older than
+  // that, the page says so and marks them, rather than describing a build that
+  // cannot be downloaded yet.
+  const { state } = useOrbisReleases();
+  const published = state.status === "ready" ? state.releases[0]?.version ?? null : null;
+  const shipped = published ? Number(published.split(".")[0]) >= 5 : false;
+
   return (
     <section id="features" className={cx(styles.section, styles.features)} aria-labelledby="orbis-features-title">
       <div className="container">
         <Reveal as="h2" id="orbis-features-title" className={cx(styles.sectionTitle, styles.center)}>
           {orbisCopy.features.heading}
         </Reveal>
+        {!shipped && published && (
+          <Reveal as="p" className={cx(styles.upcomingNote, styles.center)} variant="fade" delay={80}>
+            {withOrbisLogo(orbisCopy.features.upcomingNote.replace("{version}", published))}
+          </Reveal>
+        )}
       </div>
       {orbisFeatures.map((feature, i) => (
-        <FeatureComposition key={feature.id} id={feature.id} title={feature.title} copy={feature.copy} index={i} />
+        <FeatureComposition
+          key={feature.id}
+          id={feature.id}
+          title={feature.title}
+          copy={feature.copy}
+          index={i}
+          upcoming={Boolean(feature.upcoming) && !shipped}
+        />
       ))}
     </section>
   );
 }
 
-function FeatureComposition({ id, title, copy, index }: { id: OrbisCapabilityId; title: string; copy: string; index: number }) {
+function FeatureComposition({ id, title, copy, index, upcoming }: { id: OrbisCapabilityId; title: string; copy: string; index: number; upcoming: boolean }) {
   const [ref, inView] = useInView<HTMLDivElement>(0.25);
   return (
     <article className={cx(styles.feature, index % 2 === 1 && styles.featureFlip, inView && styles.inView)} aria-labelledby={`orbis-feature-${id}`}>
@@ -43,6 +63,11 @@ function FeatureComposition({ id, title, copy, index }: { id: OrbisCapabilityId;
           <Reveal as="h3" id={`orbis-feature-${id}`} className={styles.featureTitle}>
             {title}
           </Reveal>
+          {upcoming && (
+            <Reveal as="p" className={styles.upcomingBadge} variant="fade" delay={60}>
+              {orbisCopy.features.upcomingBadge}
+            </Reveal>
+          )}
           <Reveal as="p" className={styles.featureCopy} delay={120}>
             {withOrbisLogo(copy)}
           </Reveal>
