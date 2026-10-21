@@ -1751,6 +1751,54 @@
   border-color: rgba(237, 177, 102, 0.45);
 }
 
+/* The release that is still to come: the same card, held back a step. */
+.cardUpcoming {
+  border-style: dashed;
+  border-color: var(--ob-line-strong);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.02), transparent);
+}
+
+.upcomingIcon {
+  border-style: dashed;
+}
+
+.upcomingIcon i {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--ob-accent);
+  border-radius: 50%;
+}
+
+.badgeQuiet {
+  border-color: var(--ob-line-strong);
+  color: var(--ob-text-2);
+}
+
+.upcomingList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 1rem 0;
+  border-block: 1px solid var(--ob-line);
+  list-style: none;
+}
+
+.upcomingList li {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--ob-line);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--ob-text-2);
+}
+
+.upcomingWait {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ob-text-3);
+}
+
 .cardRecommended {
   border-color: rgba(237, 177, 102, 0.28);
 }

@@ -13,6 +13,7 @@ import {
   orbisPlatforms,
   orbisPortableGuide,
   orbisReleasesUrl,
+  orbisUpcoming,
   type OrbisPlatform,
 } from "@/content/orbis";
 import {
@@ -193,6 +194,7 @@ export function OrbisDownload() {
                 }}
               />
             ))}
+            {latest && Number(latest.version.split(".")[0]) < orbisUpcoming.major && <UpcomingCard />}
           </div>
         )}
       </div>
@@ -436,6 +438,42 @@ function BundleParts({ build }: { build: OrbisBuild }) {
         </details>
       )}
     </div>
+  );
+}
+
+/**
+ * The release that has not happened yet. No button, no date, no file size —
+ * there is nothing to download. It stands next to the real cards so the page
+ * can say what is coming without pretending it has arrived, and it is rendered
+ * only while GitHub's newest release is older than it.
+ */
+function UpcomingCard() {
+  return (
+    <article className={cx(styles.card, styles.cardUpcoming)} aria-labelledby="orbis-card-upcoming">
+      <span className={styles.cardSheen} aria-hidden="true" />
+
+      <div className={styles.cardTop}>
+        <span className={cx(styles.cardIcon, styles.upcomingIcon)} aria-hidden="true">
+          <i />
+        </span>
+        <span className={cx(styles.badge, styles.badgeQuiet)}>{orbisUpcoming.label}</span>
+      </div>
+
+      <div>
+        <h3 id="orbis-card-upcoming" className={styles.cardTitle}>
+          {withOrbisLogo(orbisUpcoming.title)}
+        </h3>
+        <p className={styles.cardCompat}>{orbisUpcoming.text}</p>
+      </div>
+
+      <ul className={styles.upcomingList}>
+        {orbisUpcoming.brings.map((one) => (
+          <li key={one}>{one}</li>
+        ))}
+      </ul>
+
+      <p className={styles.upcomingWait}>{withOrbisLogo(orbisUpcoming.note)}</p>
+    </article>
   );
 }
 
