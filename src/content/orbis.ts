@@ -131,28 +131,33 @@ export const orbisBundleRequirements: Partial<Record<OrbisPlatform, { label: str
   ],
 };
 
-export type OrbisCapabilityId = "ai" | "workspace" | "memory" | "files" | "tools" | "learning" | "voice";
+export type OrbisCapabilityId = "browser" | "ai" | "toolkit" | "courses" | "chess" | "arena" | "eye" | "cosmos";
 
 export const orbisCopy = {
   label: company.name,
   hero: {
     title: "Orbis",
-    tagline: "Intelligence, within reach.",
-    support: "Your AI. Your workspace. Your world.",
-    description: "A connected intelligent environment designed to help you think, create, learn, and work from one place.",
+    tagline: "A browser with a mind of its own.",
+    support: "Browse, ask, build, learn and play — in one window.",
+    description:
+      "Orbis puts Orion beside every page you open, and brings eight worlds of its own along with it. What you do stays on your computer.",
     primary: "Download Orbis",
     secondary: "Explore Orbis",
   },
   intro: {
     heading: "This is Orbis.",
-    support: `A connected intelligent environment built by ${company.name}.`,
-    detail: "AI, workspace, memory, files, tools, learning, and voice — designed to work together.",
+    support: `A browser built by ${company.name}, with Orion inside it.`,
+    detail: "Ask about the page you are on. Then step into the Toolkit, Courses, Chess, the Arena, Earth and the universe.",
   },
-  connected: { heading: "Everything connected." },
-  features: { heading: "Built around you." },
+  connected: { heading: "Eight worlds, one window." },
+  features: { heading: "What is inside." },
+  privacy: {
+    heading: "It all stays here.",
+    text: "Orbis keeps what you do on your own computer, and gives you the locks to keep it there.",
+  },
   more: {
-    heading: "More than software.",
-    text: "Orbis is designed to feel less like another application and more like an intelligent environment.",
+    heading: "More than a browser.",
+    text: "Orbis is designed to feel less like another application and more like a place you work, learn and play.",
   },
   download: {
     heading: "Download Orbis",
@@ -183,7 +188,7 @@ export const orbisCopy = {
   },
   final: {
     heading: "Ready for Orbis?",
-    support: "Your intelligent workspace awaits.",
+    support: "One window, and everything in it.",
   },
   empty: {
     heading: "Orbis is getting ready.",
@@ -192,23 +197,88 @@ export const orbisCopy = {
 } as const;
 
 export const orbisCapabilities: { id: OrbisCapabilityId; label: string; description: string }[] = [
-  { id: "ai", label: "AI", description: "Intelligent assistance for thinking, creating, exploring, and working." },
-  { id: "workspace", label: "Workspace", description: "A connected environment for your projects, ideas, and work." },
-  { id: "memory", label: "Memory", description: "Keep useful information connected across your experience." },
-  { id: "files", label: "Files", description: "Organise and access what matters." },
-  { id: "tools", label: "Tools", description: "Useful utilities without breaking your workflow." },
-  { id: "learning", label: "Learning", description: "Learn, practise, and explore in one environment." },
-  { id: "voice", label: "Voice", description: "Interact naturally with Orbis." },
+  { id: "browser", label: "Browser", description: "Tabs, workspaces, downloads and permissions, with ads blocked." },
+  { id: "ai", label: "Orion", description: "Ask about the page you are on, and have it answered with sources." },
+  { id: "toolkit", label: "Toolkit", description: "Thousands of calculators, converters and lab tools, offline." },
+  { id: "courses", label: "Courses", description: "Structured learning, with what you know actually measured." },
+  { id: "chess", label: "Chess", description: "Play the engine, study your games and follow live tournaments." },
+  { id: "arena", label: "Arena", description: "Live football and Formula 1, with scores, tables and timing." },
+  { id: "eye", label: "OrbisEye", description: "A live 3D Earth: aircraft, ships, satellites and earthquakes." },
+  { id: "cosmos", label: "Cosmos", description: "A real-time 3D universe, from the Solar System to the Milky Way." },
 ];
 
 export const orbisFeatures: { id: OrbisCapabilityId; title: string; copy: string }[] = [
-  { id: "ai", title: "AI", copy: "Intelligent assistance designed to help you think, create, explore, and work." },
-  { id: "workspace", title: "Workspace", copy: "Bring your work, projects, ideas, and tasks into one connected environment." },
-  { id: "memory", title: "Memory", copy: "Keep useful information connected throughout your Orbis experience." },
-  { id: "files", title: "Files", copy: "Organise, access, and work with your files without breaking your workflow." },
-  { id: "tools", title: "Tools", copy: "Powerful utilities designed to stay within your workflow." },
-  { id: "learning", title: "Learning", copy: "Learn, practise, explore, and build knowledge in one place." },
-  { id: "voice", title: "Voice", copy: "Interact naturally with Orbis using your voice." },
+  {
+    id: "browser",
+    title: "Browser",
+    copy: "Tabs, workspaces, history, downloads and per-site permissions — with ad blocking built in, not bolted on.",
+  },
+  {
+    id: "ai",
+    title: "Orion",
+    copy: "Orion sits beside the page you are reading. Ask about it, have it acted on, or research a question and get the sources back with the answer.",
+  },
+  {
+    id: "toolkit",
+    title: "Toolkit",
+    copy: "Over two thousand calculators, converters and lab tools, from engineering to chemistry — all of them working on this computer, with or without a connection.",
+  },
+  {
+    id: "courses",
+    title: "Courses",
+    copy: "Structured learning that measures what you actually know, instead of how many videos you have watched.",
+  },
+  {
+    id: "chess",
+    title: "Chess World",
+    copy: "Play the engine, study your own games move by move, train against your weaknesses, and follow live tournaments.",
+  },
+  {
+    id: "arena",
+    title: "Arena",
+    copy: "Live football and Formula 1: scores, fixtures, tables, form, the race calendar, and lap and sector timing.",
+  },
+  {
+    id: "eye",
+    title: "OrbisEye",
+    copy: "A live 3D Earth. Aircraft in the air, ships at sea, satellites overhead and earthquakes as they are recorded.",
+  },
+  {
+    id: "cosmos",
+    title: "Cosmos",
+    copy: "A real-time 3D universe, simulated to scale — the Solar System, the stars around it, and the Milky Way beyond.",
+  },
+];
+
+/**
+ * What Orbis keeps on the visitor's own computer, and the locks on it. Each line
+ * is traced to the app's code:
+ *
+ *  - store.ts writes chats, settings and profile data under the user's app folder
+ *  - accountSecurity.ts wraps a random account key with a scrypt key from the
+ *    password, and never stores anything to compare a password against
+ *  - portable/encryption.ts seals an exported profile with AES-256-GCM, each file
+ *    bound to its own path, the key derived by scrypt (~0.25s, 64 MB per guess)
+ *  - platformElectron.ts keeps keys in Windows' own encrypted storage (safeStorage)
+ *  - the Toolkit and the Arcade need no connection; Orion's answers do
+ */
+export const orbisPrivacy: { title: string; body: string }[] = [
+  {
+    title: "Your data stays here",
+    body: "Chats, history, bookmarks, workspaces and course progress are files on your own computer. NxtOrbis runs no server that holds them.",
+  },
+  {
+    title: "Lock a profile",
+    body: "A password derives the key that unwraps your profile. Nothing is stored to compare it against, so there is no password sitting there to be taken.",
+  },
+  {
+    title: "Carry it, sealed",
+    body: "Move a profile to another computer as an encrypted package: AES-256-GCM, every file sealed separately, the key slowed to about a quarter of a second per guess.",
+  },
+  {
+    title: "Honest about the cloud",
+    body: "Orion answers from the cloud, so that part needs a connection — but the Toolkit and everything you have saved keep working without one.",
+  },
 ];
 
 export const orbisSeo = {
