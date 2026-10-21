@@ -24,8 +24,9 @@
  */
 
 export type OrbStateName =
-  | "idle" | "hero" | "interactive" | "network" | "ai" | "workspace" | "memory" | "files"
-  | "tools" | "learning" | "voice" | "cinematic" | "download" | "loading" | "success" | "error" | "final";
+  | "idle" | "hero" | "interactive" | "network" | "cinematic" | "download" | "loading" | "success" | "error" | "final"
+  // One per headline feature (content/orbis OrbisCapabilityId).
+  | "browser" | "ai" | "toolkit" | "courses" | "chess" | "arena" | "eye" | "cosmos";
 
 export type OrbDownloadPhase = "idle" | "contract" | "ring" | "expand" | "error";
 export type OrbQuality = "high" | "medium" | "low";
@@ -47,13 +48,17 @@ export const ORB_STATES: Record<OrbStateName, Mix> = {
   hero: mix({ activity: 0.55, glow: 1, core: 0.6 }),
   interactive: mix({ activity: 0.7, core: 0.7 }),
   network: mix({ activity: 0.6, network: 1, rings: 0.55 }),
+  // The eight features. Each reaches for the knob that reads as that world:
+  // panels for a tab strip, tools for the Toolkit, learning for a climbing path,
+  // network for a board's relations, energy for a race, rings for orbits.
+  browser: mix({ activity: 0.5, panels: 1, rings: 0.35 }),
   ai: mix({ activity: 1, energy: 1, core: 0.95, network: 0.35, rings: 0.7 }),
-  workspace: mix({ activity: 0.5, panels: 1, rings: 0.35 }),
-  memory: mix({ activity: 0.55, network: 1, rings: 0.3 }),
-  files: mix({ activity: 0.5, files: 1, rings: 0.3 }),
-  tools: mix({ activity: 0.55, tools: 1, rings: 0.45 }),
-  learning: mix({ activity: 0.6, learning: 1, network: 0.4, rings: 0.3 }),
-  voice: mix({ activity: 0.65, voice: 1, rings: 0.2, core: 0.7 }),
+  toolkit: mix({ activity: 0.55, tools: 1, rings: 0.45 }),
+  courses: mix({ activity: 0.6, learning: 1, network: 0.4, rings: 0.3 }),
+  chess: mix({ activity: 0.45, panels: 0.55, network: 0.75, rings: 0.3, core: 0.6 }),
+  arena: mix({ activity: 0.95, energy: 1.05, rings: 0.75, core: 0.7 }),
+  eye: mix({ activity: 0.6, network: 0.9, rings: 1.1, core: 0.55 }),
+  cosmos: mix({ activity: 0.35, glow: 1.25, core: 0.45, rings: 1.2, files: 0.3 }),
   cinematic: mix({ activity: 0.5, glow: 1.2, core: 0.65 }),
   download: mix({ activity: 0.5, rings: 0.7 }),
   loading: mix({ activity: 0.4, pulse: 1, rings: 0.5 }),
