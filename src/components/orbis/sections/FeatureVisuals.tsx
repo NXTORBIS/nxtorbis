@@ -75,17 +75,21 @@ function OrionVisual() {
 
 /* --------------------------------------------------------------- toolkit -- */
 /** A dense grid of tools, lighting in waves from the centre. */
-const TOOL_CELLS = Array.from({ length: 108 }, (_, i) => {
-  const col = i % 12;
-  const row = Math.floor(i / 12);
-  return { i, delay: (Math.abs(col - 5.5) + Math.abs(row - 4)) * 90 + rand(i) * 260, lit: rand(i + 50) > 0.72 };
-});
+const toolCells = (cols: number, rows: number) =>
+  Array.from({ length: cols * rows }, (_, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    return { i, delay: (Math.abs(col - (cols - 1) / 2) + Math.abs(row - (rows - 1) / 2)) * 90 + rand(i) * 260, lit: rand(i + 50) > 0.72 };
+  });
 
-function ToolkitVisual() {
+const TOOL_CELLS = toolCells(15, 9);
+const TOOL_CELLS_COMPACT = toolCells(8, 5);
+
+function ToolkitVisual({ compact }: { compact: boolean }) {
   return (
     <div className={cx(styles.fx, styles.fxToolkit)} aria-hidden="true">
-      <div className={styles.toolGrid}>
-        {TOOL_CELLS.map((c) => (
+      <div className={cx(styles.toolGrid, compact && styles.toolGridCompact)}>
+        {(compact ? TOOL_CELLS_COMPACT : TOOL_CELLS).map((c) => (
           <span key={c.i} className={cx(styles.toolCell, c.lit && styles.toolCellLit)} style={v("--d", `${Math.round(c.delay)}ms`)} />
         ))}
       </div>
@@ -131,13 +135,14 @@ const KNIGHT = [
   [5, 0],
 ];
 
-function ChessVisual() {
+function ChessVisual({ compact }: { compact: boolean }) {
   return (
     <div className={cx(styles.fx, styles.fxChess)} aria-hidden="true">
-      <div className={styles.chessBoard}>
-        {Array.from({ length: 64 }, (_, i) => {
-          const col = i % 8;
-          const row = Math.floor(i / 8);
+      <div className={cx(styles.chessBoard, compact && styles.chessBoardCompact)}>
+        {Array.from({ length: compact ? 36 : 64 }, (_, i) => {
+          const side = compact ? 6 : 8;
+          const col = i % side;
+          const row = Math.floor(i / side);
           return <span key={i} className={cx(styles.chessSquare, (col + row) % 2 === 1 && styles.chessSquareDark)} style={v("--d", `${(col + row) * 45}ms`)} />;
         })}
       </div>
@@ -250,21 +255,25 @@ const PLANETS = [
   { rx: 36, ry: 15, size: 1.8, dur: 16 },
   { rx: 46, ry: 19, size: 2.6, dur: 23 },
 ];
-const STARS = Array.from({ length: 46 }, (_, i) => ({
-  x: rand(i * 3 + 1) * 100,
-  y: rand(i * 3 + 2) * 100,
-  r: 0.25 + rand(i * 3 + 3) * 0.55,
-  d: rand(i * 7) * 3,
-}));
+const makeStars = (n: number) =>
+  Array.from({ length: n }, (_, i) => ({
+    x: rand(i * 3 + 1) * 100,
+    y: rand(i * 3 + 2) * 100,
+    r: 0.25 + rand(i * 3 + 3) * 0.55,
+    d: rand(i * 7) * 3,
+  }));
 
-function CosmosVisual() {
+const STARS = makeStars(46);
+const STARS_COMPACT = makeStars(14);
+
+function CosmosVisual({ compact }: { compact: boolean }) {
   return (
     <div className={cx(styles.fx, styles.fxCosmos)} aria-hidden="true">
       <svg viewBox="0 0 100 100" className={styles.cosmos} focusable="false">
-        {STARS.map((s, i) => (
+        {(compact ? STARS_COMPACT : STARS).map((s, i) => (
           <circle key={`s${i}`} className={styles.cosmosStar} cx={s.x} cy={s.y} r={s.r} style={v("--d", `${s.d.toFixed(2)}s`)} />
         ))}
-        {PLANETS.map((p, i) => (
+        {(compact ? PLANETS.slice(0, 2) : PLANETS).map((p, i) => (
           <g key={`p${i}`}>
             <ellipse className={styles.cosmosOrbit} cx="50" cy="50" rx={p.rx} ry={p.ry} vectorEffect="non-scaling-stroke" style={v("--d", `${200 + i * 160}ms`)} />
             <circle className={styles.cosmosPlanet} r={p.size}>
@@ -282,23 +291,28 @@ function CosmosVisual() {
   );
 }
 
-export function FeatureVisual({ id }: { id: OrbisCapabilityId }) {
+/**
+ * `compact` is for the finale, where eight of these run at once in small cells:
+ * the same drawings with fewer pieces, because the piece count is what costs
+ * frames there (measured) and nobody can see a hundred cells in a thumbnail.
+ */
+export function FeatureVisual({ id, compact = false }: { id: OrbisCapabilityId; compact?: boolean }) {
   switch (id) {
     case "browser":
       return <BrowserVisual />;
     case "ai":
       return <OrionVisual />;
     case "toolkit":
-      return <ToolkitVisual />;
+      return <ToolkitVisual compact={compact} />;
     case "courses":
       return <CoursesVisual />;
     case "chess":
-      return <ChessVisual />;
+      return <ChessVisual compact={compact} />;
     case "arena":
       return <ArenaVisual />;
     case "eye":
       return <EyeVisual />;
     case "cosmos":
-      return <CosmosVisual />;
+      return <CosmosVisual compact={compact} />;
   }
 }

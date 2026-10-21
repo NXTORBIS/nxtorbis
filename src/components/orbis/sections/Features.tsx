@@ -8,6 +8,7 @@ import { orbisCapabilities, orbisCopy, orbisFeatures, type OrbisCapabilityId } f
 import { useOrbisReleases } from "@/lib/orbisReleases";
 import { OrbSlot } from "../orb/OrbStage";
 import { useInView } from "../shared";
+import { useTilt } from "../useTilt";
 import { FeatureVisual } from "./FeatureVisuals";
 import styles from "../Orbis.module.css";
 
@@ -53,6 +54,7 @@ export function OrbisFeatures() {
 
 function FeatureComposition({ id, title, copy, index, upcoming }: { id: OrbisCapabilityId; title: string; copy: string; index: number; upcoming: boolean }) {
   const [ref, inView] = useInView<HTMLDivElement>(0.25);
+  const tilt = useTilt<HTMLDivElement>(6);
   return (
     <article className={cx(styles.feature, index % 2 === 1 && styles.featureFlip, inView && styles.inView)} aria-labelledby={`orbis-feature-${id}`}>
       <div className={cx("container", styles.featureGrid)}>
@@ -72,8 +74,16 @@ function FeatureComposition({ id, title, copy, index, upcoming }: { id: OrbisCap
             {withOrbisLogo(copy)}
           </Reveal>
         </div>
-        <div ref={ref} className={styles.featureStage}>
-          <FeatureVisual id={id} />
+        <div
+          ref={(node) => {
+            ref.current = node;
+            tilt.current = node;
+          }}
+          className={styles.featureStage}
+        >
+          <div className={styles.featureDepth}>
+            <FeatureVisual id={id} />
+          </div>
           <div className={styles.featureOrb}>
             <OrbSlot state={id} />
           </div>
