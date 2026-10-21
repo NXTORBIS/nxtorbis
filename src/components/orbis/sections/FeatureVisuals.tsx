@@ -163,21 +163,44 @@ function ChessVisual() {
 }
 
 /* ----------------------------------------------------------------- arena -- */
-/** A race: cars sweeping a timing line, and a table settling beside it. */
+/**
+ * A scoreboard: the clock running, a goal going in, and the table below it
+ * reordering itself. The teams are marks and bars rather than names, and the
+ * only number that moves is a score going from one to two — a drawing of a
+ * scoreboard, not a claim about a match.
+ */
 function ArenaVisual() {
   return (
     <div className={cx(styles.fx, styles.fxArena)} aria-hidden="true">
-      <div className={styles.arenaTrack}>
-        {[0, 1, 2, 3].map((i) => (
-          <span key={i} className={styles.arenaLane}>
-            <i className={styles.arenaCar} style={{ ...v("--d", `${i * 320}ms`), ...v("--dur", `${2.6 + i * 0.35}s`) }} />
+      <div className={styles.board}>
+        <div className={styles.boardTop}>
+          <span className={styles.boardLive}>
+            <i />
+            LIVE
           </span>
+          <span className={styles.boardClock}>
+            <i className={styles.boardClockFill} />
+          </span>
+        </div>
+
+        {[0, 1].map((row) => (
+          <div key={row} className={styles.boardRow} style={v("--d", `${400 + row * 180}ms`)}>
+            <span className={styles.boardCrest} />
+            <span className={styles.boardName} style={v("--w", row === 0 ? "74%" : "58%")} />
+            <span className={cx(styles.boardScore, row === 0 && styles.boardScoring)}>
+              <i>1</i>
+              <i>2</i>
+            </span>
+          </div>
         ))}
-        <span className={styles.arenaFinish} />
       </div>
-      <div className={styles.arenaTable}>
+
+      <div className={styles.standings}>
         {[0, 1, 2, 3].map((i) => (
-          <span key={i} className={styles.arenaRow} style={{ ...v("--d", `${900 + i * 180}ms`), ...v("--w", `${[94, 78, 66, 52][i]}%`) }} />
+          <div key={i} className={styles.standingsRow} style={v("--d", `${1100 + i * 150}ms`)}>
+            <span className={styles.standingsPos}>{i + 1}</span>
+            <span className={styles.standingsBar} style={v("--w", `${[96, 80, 67, 54][i]}%`)} />
+          </div>
         ))}
       </div>
     </div>

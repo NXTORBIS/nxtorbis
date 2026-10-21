@@ -1155,86 +1155,243 @@
   display: grid;
   grid-template-rows: auto auto;
   align-content: center;
-  gap: 2rem;
-  padding: 12% 8%;
+  gap: 1.1rem;
+  padding: 12% 9%;
 }
 
-.arenaTrack {
-  position: relative;
+.board {
   display: grid;
-  gap: 1.15rem;
-  width: min(100%, 24rem);
-  margin: 0 auto;
-  padding: 1.4rem 0;
-  align-content: center;
+  gap: 0.75rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--ink-lit);
+  border-radius: 14px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), transparent);
 }
 
-.arenaLane {
+.boardTop {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.boardLive {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  color: var(--ob-accent);
+}
+
+.boardLive i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-hot);
+}
+
+.inView .boardLive i {
+  animation: livePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    box-shadow: 0 0 0 0 rgba(237, 177, 102, 0.5);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 0 4px rgba(237, 177, 102, 0);
+  }
+}
+
+/* The clock: ninety minutes as a line that fills. */
+.boardClock {
   position: relative;
+  flex: 1;
   height: 3px;
   border-radius: 2px;
   background: var(--ink);
+  overflow: hidden;
 }
 
-.arenaCar {
+.boardClockFill {
   position: absolute;
-  top: 50%;
-  left: 0;
-  width: 22%;
-  height: 7px;
-  margin-top: -3.5px;
+  inset: 0;
   border-radius: 2px;
-  background: linear-gradient(90deg, transparent, var(--ink-hot));
-  opacity: 0;
-}
-
-.inView .arenaCar {
-  animation: lap var(--dur, 3s) cubic-bezier(0.45, 0, 0.3, 1) var(--d, 0ms) infinite;
-}
-
-@keyframes lap {
-  0% {
-    opacity: 0;
-    transform: translateX(-20%);
-  }
-  12%,
-  80% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(560%);
-  }
-}
-
-.arenaFinish {
-  position: absolute;
-  right: 4%;
-  top: -6%;
-  bottom: -6%;
-  width: 2px;
-  background: repeating-linear-gradient(to bottom, var(--ink-lit) 0 4px, transparent 4px 8px);
-}
-
-.arenaTable {
-  display: grid;
-  gap: 0.55rem;
-  width: min(100%, 24rem);
-  margin: 0 auto;
-  align-content: center;
-}
-
-.arenaRow {
-  width: var(--w, 80%);
-  height: 11px;
-  border-radius: 4px;
-  background: linear-gradient(90deg, rgba(237, 177, 102, 0.35), var(--ink));
+  background: linear-gradient(90deg, rgba(237, 177, 102, 0.5), var(--ink-hot));
   transform: scaleX(0);
   transform-origin: left;
 }
 
-.inView .arenaRow {
-  animation: lineIn 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms) both;
+.inView .boardClockFill {
+  animation: clockRun 9s linear 300ms infinite;
+}
+
+@keyframes clockRun {
+  0% {
+    transform: scaleX(0);
+  }
+  92%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.boardRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.inView .boardRow {
+  animation: rowIn 600ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms) both;
+}
+
+@keyframes rowIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.boardCrest {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--ink-lit);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.16), transparent 70%);
+}
+
+.boardName {
+  width: var(--w, 70%);
+  height: 7px;
+  border-radius: 4px;
+  background: var(--ink);
+}
+
+/* The score: two digits stacked, the top one rolling away as the goal goes in. */
+.boardScore {
+  position: relative;
+  display: block;
+  width: 1.9rem;
+  height: 2.1rem;
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  color: var(--ob-text);
+}
+
+.boardScore i {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+}
+
+.boardScore i:last-child {
+  transform: translateY(100%);
+}
+
+.inView .boardScoring {
+  animation: scoreFlash 9s ease-out 300ms infinite;
+}
+
+.inView .boardScoring i:first-child {
+  animation: digitOut 9s cubic-bezier(0.4, 0, 0.2, 1) 300ms infinite;
+}
+
+.inView .boardScoring i:last-child {
+  animation: digitIn 9s cubic-bezier(0.4, 0, 0.2, 1) 300ms infinite;
+}
+
+@keyframes digitOut {
+  0%,
+  52% {
+    transform: translateY(0);
+  }
+  60%,
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes digitIn {
+  0%,
+  52% {
+    transform: translateY(100%);
+  }
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scoreFlash {
+  0%,
+  52% {
+    border-color: var(--ink);
+    box-shadow: none;
+  }
+  58% {
+    border-color: var(--ink-hot);
+    box-shadow: 0 0 18px -4px rgba(237, 177, 102, 0.8);
+  }
+  76%,
+  100% {
+    border-color: var(--ink);
+    box-shadow: none;
+  }
+}
+
+/* The table underneath, settling into order. */
+.standings {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0 0.3rem;
+}
+
+.standingsRow {
+  display: grid;
+  grid-template-columns: 1.1rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.inView .standingsRow {
+  animation: standIn 620ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms) both;
+}
+
+@keyframes standIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.standingsPos {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--ob-text-3);
+  text-align: right;
+}
+
+.standingsBar {
+  width: var(--w, 80%);
+  height: 9px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, rgba(237, 177, 102, 0.4), var(--ink));
 }
 
 /* ------------------------------------------------------------ orbiseye -- */
@@ -1376,8 +1533,12 @@
   .inView .chessSquare,
   .inView .chessPath path,
   .inView .chessPath circle,
-  .inView .arenaCar,
-  .inView .arenaRow,
+  .inView .boardClockFill,
+  .inView .boardLive i,
+  .inView .boardRow,
+  .inView .boardScoring,
+  .inView .boardScoring i,
+  .inView .standingsRow,
   .inView .eyeGlobe ellipse,
   .inView .eyeEdge,
   .inView .eyeFlight path,
@@ -1395,7 +1556,7 @@
   }
 
   .inView .browserLine,
-  .inView .arenaRow,
+  .inView .boardClockFill,
   .inView .orionType {
     transform: scaleX(1);
   }
