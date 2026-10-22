@@ -199,6 +199,9 @@ export const orbisCopy = {
     heading: "Ready for Orbis?",
     support: "One window, and everything in it.",
   },
+  ending: {
+    line: "Orbis. One window, and everything in it.",
+  },
   empty: {
     heading: "Orbis is getting ready.",
     text: "Release information will appear here when the first supported build is available.",

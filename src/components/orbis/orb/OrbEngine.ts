@@ -772,11 +772,14 @@ export class OrbEngine {
     if (this.opts.reducedMotion || this.quality === "low") return;
     this.frameAcc += dt;
     this.frameN += 1;
-    if (this.frameN < 90) return;
+    if (this.frameN < 50) return;
     const avg = this.frameAcc / this.frameN;
     this.frameAcc = 0;
     this.frameN = 0;
-    if (avg > 0.028) {
+    // 20ms: the page has an atmosphere, particles and eight drawings to pay
+    // for as well, so the Orb steps down while there is still headroom rather
+    // than only once frames are already being missed.
+    if (avg > 0.02) {
       this.quality = this.quality === "high" ? "medium" : "low";
       this.applyQuality();
       if (this.baseRadius) this.resizeCanvas();

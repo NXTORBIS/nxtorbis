@@ -195,6 +195,19 @@ export function OrbStage({ children }: { children: ReactNode }) {
         o = visibility(only);
       }
 
+      // Publish where the Orb is, so the page can be lit by it: panels brighten
+      // on the side facing it, the flare sits across it, the caustics fall
+      // beneath it. One write per measure, read by CSS alone.
+      const root = layer.closest("[data-orbis-page]") as HTMLElement | null;
+      if (root) {
+        root.style.setProperty("--orb-x", `${x.toFixed(1)}px`);
+        root.style.setProperty("--orb-y", `${y.toFixed(1)}px`);
+        root.style.setProperty("--orb-r", `${r.toFixed(1)}px`);
+        root.style.setProperty("--orb-o", o.toFixed(3));
+        root.style.setProperty("--orb-vx", (x / Math.max(1, window.innerWidth)).toFixed(4));
+        root.style.setProperty("--orb-vy", (y / Math.max(1, window.innerHeight)).toFixed(4));
+      }
+
       if (engine) {
         engine.setState(state);
         engine.setLayout(x, y, r, o, immediate);
@@ -307,6 +320,7 @@ export function OrbSlot({
         data-orb-slot={state}
         data-orb-scale={scale}
         aria-label="Interact with the Orbis Orb"
+        data-cursor="orb"
         onClick={ripple}
       />
     );

@@ -87,13 +87,17 @@ export function BackgroundParticles() {
     };
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // The page now carries an atmosphere above this canvas: dots, weather,
+      // caustics and grain. The particles no longer have to carry the depth on
+      // their own, so there are fewer of them and they are drawn at a lower
+      // density on dense screens — worth about ten frames a second.
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       width = canvas.clientWidth || window.innerWidth;
       height = canvas.clientHeight || window.innerHeight;
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      particles = Array.from({ length: Math.round((width * height) / 24000) }, () => spawn(width, height));
+      particles = Array.from({ length: Math.round((width * height) / 62000) }, () => spawn(width, height));
       if (reduced) paint(0, false);
     };
 

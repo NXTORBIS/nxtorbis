@@ -377,7 +377,7 @@ function PlatformCard({
         <>
           {build.sha256 && <Checksum value={build.sha256} />}
 
-          <div className={styles.cardCta} data-cta>
+          <div className={styles.cardCta} data-cta data-cursor="download">
             <Button
               variant="primary"
               size="md"

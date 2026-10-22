@@ -2,6 +2,11 @@
 
 import { BackgroundParticles } from "./BackgroundParticles";
 import { Spotlight } from "./Spotlight";
+import { Atmosphere } from "./Atmosphere";
+import { Cursor } from "./Cursor";
+import { Filament } from "./Filament";
+import { Instruments } from "./Instruments";
+import { WireframeKey } from "./WireframeKey";
 import { Spine } from "./Spine";
 import { OrbStage } from "./orb/OrbStage";
 import { OrbisHero, OrbisIntro } from "./sections/Opening";
@@ -11,6 +16,7 @@ import { OrbisGathering } from "./sections/Gathering";
 import { OrbisDownload, OrbisInstallation } from "./sections/Download";
 import { OrbisLatestRelease, OrbisReleaseHistory, OrbisRequirements } from "./sections/Releases";
 import { OrbisEcosystem, OrbisFinal } from "./sections/Closing";
+import { OrbisEnding } from "./sections/Ending";
 import styles from "./Orbis.module.css";
 
 /**
@@ -22,11 +28,16 @@ import styles from "./Orbis.module.css";
  */
 export function OrbisExperience() {
   return (
-    <div className={styles.page}>
+    <div className={styles.page} data-orbis-page>
       <div className={styles.atmosphere} aria-hidden="true" />
+      <Atmosphere />
       <BackgroundParticles />
       <Spotlight />
       <Spine />
+      <Instruments />
+      <Cursor />
+      <Filament />
+      <WireframeKey />
       <OrbStage>
         <div className={styles.content}>
           <OrbisHero />
@@ -42,6 +53,7 @@ export function OrbisExperience() {
           <OrbisInstallation />
           <OrbisEcosystem />
           <OrbisFinal />
+          <OrbisEnding />
         </div>
       </OrbStage>
     </div>
