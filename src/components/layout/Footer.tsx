@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { company, nav, products, services } from "@/content/site";
+import { buildStamp } from "@/lib/build";
 import { orbisReleasesUrl } from "@/content/orbis";
 import { Logo } from "@/components/ui/Logo";
 import { OrbisLogo, withOrbisLogo } from "@/components/ui/OrbisLogo";
@@ -132,6 +133,12 @@ export function Footer() {
           </a>
           <p className={styles.meta}>
             {company.legalName} · {company.location}
+          </p>
+          {/* The build this page came from, and what it is made of. Instrument
+              markings: true, and small enough to be ornament. */}
+          <p className={styles.stamp}>
+            <span>{buildStamp}</span>
+            <span>Next.js · WebGL · CSS</span>
           </p>
         </div>
       </div>

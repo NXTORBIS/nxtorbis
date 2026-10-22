@@ -178,3 +178,17 @@
 .legal:hover {
   color: var(--text);
 }
+
+.stamp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  width: 100%;
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  opacity: 0.65;
+}

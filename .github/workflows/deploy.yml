@@ -35,7 +35,12 @@ jobs:
       # A broken commit must never reach the live site.
       - run: npm run typecheck
       - run: npm run lint
+      # The footer prints which build it came from; these are the only source
+      # of that, so a local build simply prints nothing.
       - run: npm run build
+        env:
+          NEXT_PUBLIC_BUILD_SHA: ${{ github.sha }}
+          NEXT_PUBLIC_BUILD_DATE: ${{ github.event.head_commit.timestamp }}
 
       # public/CNAME and public/.nojekyll are copied into out/ by the build:
       # CNAME keeps the custom domain, .nojekyll stops Pages' Jekyll step from

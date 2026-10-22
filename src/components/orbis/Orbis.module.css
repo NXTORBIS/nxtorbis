@@ -2929,3 +2929,679 @@
     opacity: 1;
   }
 }
+
+/* ======================================================= atmosphere ==
+   The page as a lit, physical surface.
+
+   Everything below is painted from variables rather than script: where the
+   Orb is (--orb-x/y/r, published by OrbStage), where the pointer is
+   (--sx/sy, by Spotlight), the hour (--warmth), the season (--season) and
+   this visit's noise (--seed). No layer here reads layout or runs a frame
+   loop of its own.
+   ==================================================================== */
+
+.page {
+  /* Light. Two sources agreeing on direction: the Orb, and a high key light
+     off to the left, so every shadow on the page falls the same way. */
+  --lit-x: var(--orb-x, 70vw);
+  --lit-y: var(--orb-y, 40vh);
+  --key: -1;
+  --shadow-near: 0 2px 10px -6px rgba(0, 0, 0, 0.9);
+  --shadow-far: 0 28px 60px -40px rgba(0, 0, 0, 1);
+
+  /* Ink weights: structure, detail, accent. Three widths, used everywhere. */
+  --w-structure: 1px;
+  --w-detail: 1px;
+  --w-accent: 1.6px;
+
+  /* Motion. Two curves for the whole page, and a weight scale. */
+  --ix-move: cubic-bezier(0.22, 1, 0.36, 1);
+  --ix-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-light: 160ms;
+  --t-heavy: 620ms;
+}
+
+/* The grading: a few degrees warmer after dark, a few cooler at noon, and a
+   quarter-turn of hue across the year. It is applied to the air alone —
+   filtering the whole page put every frame through one enormous layer and
+   cost about half the frame rate. */
+.atmos {
+  filter: hue-rotate(calc(var(--season, 0) * 1deg)) saturate(calc(0.96 + var(--warmth, 0.5) * 0.08));
+}
+
+.atmos {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint;
+}
+
+.atmos > * {
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 100vh;
+  margin-bottom: -100vh;
+}
+
+/* Two layers, and neither repaints while you scroll.
+
+   The still one never mentions the Orb, so it is painted once: grain,
+   vignette, dot matrix, horizon. The lit one is a fixed-size disc of light
+   that is *moved* to the Orb with a transform — flare, caustics and flow
+   rings travel with it. Driving these gradients from --orb-x directly, as
+   this did at first, repainted the entire viewport on every scroll frame and
+   cost twenty frames a second. */
+.atmosStill {
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.32 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%),
+    radial-gradient(circle at center, rgba(236, 232, 224, 0.09) 0.6px, transparent 0.7px);
+  background-size: 128px 128px, 100% 100%, 22px 22px;
+  background-repeat: repeat, no-repeat, repeat;
+}
+
+/* The light itself: one disc, carried to the Orb on the compositor. */
+.atmosLight {
+  position: sticky;
+  top: 0;
+  width: 86rem;
+  height: 86rem;
+  margin-bottom: -86rem;
+  margin-left: -43rem;
+  background-image:
+    radial-gradient(52rem 7rem at 50% 50%, rgba(255, 238, 214, 0.13), transparent 72%),
+    radial-gradient(16rem 8rem at 46% 56%, rgba(255, 238, 214, 0.09), transparent 72%),
+    radial-gradient(12rem 6rem at 56% 60%, rgba(188, 226, 255, 0.07), transparent 74%),
+    repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent 0 6.4rem,
+      rgba(236, 232, 224, 0.05) 6.4rem 6.45rem,
+      transparent 6.45rem 12rem
+    ),
+    radial-gradient(34rem 34rem at 50% 50%, rgba(236, 232, 224, 0.07), transparent 70%);
+  opacity: calc(0.9 * var(--orb-o, 1));
+  will-change: transform;
+  transform: translate3d(calc(var(--orb-x, 50vw)), calc(var(--orb-y, 50vh) - 43rem), 0);
+}
+
+/* The weather: the only other thing that moves. */
+.atmosMesh {
+  background-image:
+    radial-gradient(38rem 30rem at 18% 22%, rgba(56, 190, 255, 0.07), transparent 70%),
+    radial-gradient(44rem 34rem at 82% 68%, rgba(237, 177, 102, 0.07), transparent 72%),
+    radial-gradient(50rem 40rem at 50% 110%, rgba(126, 96, 255, 0.055), transparent 70%);
+  will-change: transform;
+  animation: meshDrift 48s ease-in-out infinite alternate;
+  animation-delay: var(--seed-drift, 0s);
+}
+
+@keyframes meshDrift {
+  to {
+    transform: translate3d(2.5%, -2%, 0) scale(1.06);
+  }
+}
+
+/* ===================================================== materials ==== */
+/* Edges that are materials: brighter where the light is, dark where it is
+   not, with a hue shift along their length. */
+.card,
+.panelBox,
+.reqPanel,
+.guide,
+.latestCard {
+  position: relative;
+  border-color: transparent;
+  background-image:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012)),
+    linear-gradient(
+      calc(90deg + var(--orb-vx, 0.6) * 60deg),
+      rgba(255, 238, 214, 0.42),
+      rgba(236, 232, 224, 0.14) 38%,
+      rgba(126, 160, 200, 0.16) 62%,
+      rgba(236, 232, 224, 0.07)
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: var(--shadow-near), var(--shadow-far);
+}
+
+/* A visible top edge, so a card reads as a slab rather than a rectangle. */
+.card::before,
+.latestCard::before,
+.reqPanel::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 246, 230, 0.55), transparent);
+  opacity: 0.8;
+}
+
+/* ...and a reflection beneath it. */
+.cards {
+  position: relative;
+}
+
+.cards::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 100%;
+  height: 46px;
+  /* The softness is in the gradient: blurring this strip cost the download
+     section about twenty frames a second. */
+  background: linear-gradient(to bottom, rgba(236, 232, 224, 0.05), rgba(236, 232, 224, 0.02) 40%, transparent 72%);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* ===================================================== typography === */
+/* Chapter numerals, set huge and nearly gone, bleeding off the edge. */
+.feature {
+  position: relative;
+}
+
+.feature .featureIndex {
+  position: relative;
+  z-index: 1;
+}
+
+.feature::before {
+  content: attr(data-chapter);
+  position: absolute;
+  right: -0.08em;
+  top: 50%;
+  z-index: 0;
+  font-family: var(--font-display);
+  font-size: clamp(14rem, 34vw, 34rem);
+  font-weight: 500;
+  line-height: 0.7;
+  letter-spacing: -0.06em;
+  color: rgba(236, 232, 224, 0.028);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.featureFlip::before {
+  right: auto;
+  left: -0.08em;
+}
+
+/* The light passing across a headline brightens it as it goes. */
+.statement,
+.featureTitle {
+  background-image: linear-gradient(
+    calc(90deg + var(--orb-vx, 0.5) * 50deg),
+    var(--ob-text) 30%,
+    #fffaf1 46%,
+    var(--ob-text) 62%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-wrap: balance;
+  hyphens: auto;
+}
+
+/* Vertical microtype in the margins: instrument markings. */
+.section > .container {
+  position: relative;
+}
+
+.features .container::before,
+.download .container::before {
+  content: attr(data-rail);
+  position: absolute;
+  left: -2.2rem;
+  top: 0;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ob-text-3);
+  writing-mode: vertical-rl;
+  opacity: 0.6;
+}
+
+/* ===================================================== instruments == */
+.instruments {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.instrumentTicker {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0 0.8rem 1.4rem 0;
+  margin-bottom: -100vh;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ob-text-3);
+  opacity: 0.55;
+  writing-mode: vertical-rl;
+}
+
+.instrumentHash {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  gap: 2px;
+  padding-left: 0.6rem;
+  margin-bottom: -100vh;
+  flex-direction: column;
+  opacity: 0.4;
+}
+
+.instrumentHash i {
+  width: calc(3px + var(--v) * 9px);
+  height: 2px;
+  background: var(--ob-accent);
+  opacity: calc(0.25 + var(--v) * 0.6);
+}
+
+.instrumentSpine {
+  position: sticky;
+  top: 0;
+  display: none;
+  height: 100vh;
+  align-content: center;
+  gap: 0.5rem;
+  margin: 0 0 -100vh;
+  padding: 0 0.9rem 0 0;
+  justify-items: end;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--ob-text-3);
+}
+
+.instrumentSpine li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.instrumentNotch {
+  width: 14px;
+  height: 1px;
+  background: var(--ob-line-strong);
+}
+
+.instrumentNotchNow {
+  width: 22px;
+  background: var(--ob-accent);
+}
+
+@media (min-width: 1500px) {
+  .instrumentSpine {
+    display: grid;
+    margin-left: auto;
+  }
+}
+
+/* ===================================================== the cursor === */
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms var(--ix-move);
+}
+
+.cursorOn {
+  opacity: 1;
+}
+
+.cursorRing {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(236, 232, 224, 0.5);
+  border-radius: 50%;
+  transition:
+    width 220ms var(--ix-move),
+    height 220ms var(--ix-move),
+    border-color 220ms var(--ix-move),
+    border-radius 220ms var(--ix-move),
+    background-color 220ms var(--ix-move);
+}
+
+.cursor[data-kind="cta"] .cursorRing,
+.cursor[data-kind="download"] .cursorRing {
+  width: 46px;
+  height: 46px;
+  border-color: var(--ob-accent);
+  background: rgba(237, 177, 102, 0.1);
+}
+
+/* Over a drawing it becomes a crosshair. */
+.cursor[data-kind="drawing"] .cursorRing {
+  width: 34px;
+  height: 34px;
+  border-radius: 2px;
+  border-color: rgba(236, 232, 224, 0.35);
+}
+
+.cursor[data-kind="orb"] .cursorRing {
+  width: 54px;
+  height: 54px;
+  border-color: rgba(255, 246, 230, 0.6);
+}
+
+.cursorDown .cursorRing {
+  transform: scale(0.82);
+}
+
+.cursorLabel {
+  position: absolute;
+  top: calc(50% + 1.9rem);
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-style: normal;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ob-accent);
+  white-space: nowrap;
+}
+
+@media (pointer: fine) {
+  .page,
+  .page a,
+  .page button {
+    cursor: none;
+  }
+}
+
+/* ===================================================== the ending === */
+.ending {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 70vh;
+  padding-block: clamp(6rem, 14vw, 12rem);
+  text-align: center;
+  background: linear-gradient(to bottom, transparent, #000 70%);
+}
+
+.endingLine {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  letter-spacing: -0.03em;
+  color: var(--ob-text-2);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 1.4s var(--ix-move), transform 1.4s var(--ix-move);
+}
+
+.ending.inView .endingLine {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.endingMark {
+  display: block;
+  width: 5px;
+  height: 5px;
+  margin: 3rem auto 0;
+  border-radius: 50%;
+  background: var(--ob-accent);
+  box-shadow: 0 0 24px 6px rgba(237, 177, 102, 0.35);
+  transform: scale(0);
+  transition: transform 1.6s var(--ix-move) 300ms;
+}
+
+.ending.inView .endingMark {
+  transform: scale(1);
+}
+
+/* ===================================================== craft ======== */
+.page ::selection {
+  background: rgba(237, 177, 102, 0.28);
+  color: #fffaf1;
+}
+
+.page :focus-visible {
+  outline: 1px solid var(--ob-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(237, 177, 102, 0.12);
+  border-radius: 4px;
+}
+
+.page {
+  scrollbar-color: rgba(236, 232, 224, 0.22) transparent;
+  caret-color: var(--ob-accent);
+}
+
+/* A wireframe mode: the page stripped to its hairlines. Press W three times. */
+.wireframe .atmos,
+.wireframe .particles,
+.wireframe .atmosGrain {
+  opacity: 0.06;
+}
+
+.wireframe :global(*) {
+  background-image: none !important;
+  box-shadow: none !important;
+  color: rgba(236, 232, 224, 0.75) !important;
+  border-color: rgba(236, 232, 224, 0.4) !important;
+}
+
+/* Motion is decoration: the air stops, the page stays. */
+@media (prefers-reduced-motion: reduce) {
+  .atmosGrain,
+  .atmosCaustics,
+  .atmosMesh {
+    animation: none;
+  }
+
+  .endingLine,
+  .endingMark {
+    transition: none;
+  }
+}
+
+@media print {
+  .atmos,
+  .particles,
+  .spotlight,
+  .cursor,
+  .instruments,
+  .spine,
+  .page canvas {
+    display: none !important;
+  }
+
+  .page {
+    background: #fff;
+    color: #000;
+    filter: none;
+  }
+
+  .sectionTitle,
+  .statement,
+  .featureTitle {
+    color: #000;
+    -webkit-text-fill-color: #000;
+  }
+}
+
+/* ============================================= per-world grading ====
+   Each act leans toward its own temperature, inside one family: the ink the
+   drawings use, and the weather behind them. */
+.feature[data-world="browser"] { --ink-hot: rgba(170, 214, 255, 0.72); --world: 206; }
+.feature[data-world="ai"] { --ink-hot: rgba(237, 177, 102, 0.8); --world: 36; }
+.feature[data-world="toolkit"] { --ink-hot: rgba(237, 177, 102, 0.75); --world: 32; }
+.feature[data-world="courses"] { --ink-hot: rgba(142, 226, 180, 0.72); --world: 152; }
+.feature[data-world="chess"] { --ink-hot: rgba(206, 214, 226, 0.78); --world: 214; }
+.feature[data-world="arena"] { --ink-hot: rgba(255, 160, 96, 0.85); --world: 22; }
+.feature[data-world="eye"] { --ink-hot: rgba(126, 206, 255, 0.78); --world: 198; }
+.feature[data-world="cosmos"] { --ink-hot: rgba(176, 150, 255, 0.78); --world: 262; }
+
+.feature::after {
+  content: "";
+  position: absolute;
+  inset: -10% -20%;
+  z-index: -1;
+  background: radial-gradient(60rem 40rem at 70% 50%, hsl(var(--world, 36) 70% 60% / 0.05), transparent 70%);
+  opacity: 0;
+  transition: opacity 1.2s var(--ix-move);
+  pointer-events: none;
+}
+
+.feature.inView::after {
+  opacity: 1;
+}
+
+/* ================================================== the watermark === */
+/* The mark, enormous and nearly gone, behind the quietest act. */
+.more {
+  position: relative;
+  isolation: isolate;
+}
+
+.more::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  width: min(120vw, 90rem);
+  aspect-ratio: 1321 / 399;
+  background: url("/orbis/orbis-logo.png") center / contain no-repeat;
+  opacity: 0.02;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* ================================================== scroll filament = */
+.filament {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  width: 2px;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.filamentFill {
+  display: block;
+  width: 100%;
+  height: calc(var(--progress, 0) * 100%);
+  background: linear-gradient(to bottom, rgba(237, 177, 102, 0.9), rgba(237, 177, 102, 0.12));
+  box-shadow: 0 0 12px rgba(237, 177, 102, 0.5);
+}
+
+/* ================================================== act curtains ==== */
+/* Sections meet through a wipe of light rather than a hard cut. */
+.section + .section::before,
+.features::before,
+.download::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(236, 232, 224, 0.16) 18%,
+    rgba(255, 246, 230, 0.5) 50%,
+    rgba(236, 232, 224, 0.16) 82%,
+    transparent
+  );
+  opacity: 0.7;
+}
+
+.section {
+  position: relative;
+}
+
+/* =================================================== hover depth ==== */
+.card {
+  transition:
+    transform var(--t-heavy) var(--ix-move),
+    box-shadow var(--t-heavy) var(--ix-move),
+    border-color var(--t-light) linear;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-near), 0 40px 80px -48px rgba(0, 0, 0, 1);
+}
+
+/* The contents lag behind the frame, so the card has layers. */
+.card:hover .cardTitle,
+.card:hover .facts,
+.card:hover .cardCta {
+  transform: translateY(-2px);
+  transition: transform var(--t-heavy) var(--ix-move) 70ms;
+}
+
+/* ==================================================== link ink ====== */
+.textLink,
+.linkButton {
+  background-image: linear-gradient(to right, var(--ob-accent), rgba(236, 232, 224, 0.5));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  text-decoration: none;
+  transition: background-size 420ms var(--ix-move), color 220ms linear;
+}
+
+.textLink:hover,
+.linkButton:hover {
+  background-size: 100% 1px;
+  color: var(--ob-text);
+}
+
+@keyframes filamentGrow {
+  from {
+    height: 0%;
+  }
+  to {
+    height: 100%;
+  }
+}
+
+/* A phone paints these at two or three times the pixels for a tenth of the
+   effect, and it showed: the blurred pool and the field lines cost about ten
+   frames a second there. The dots, the weather and the grain stay. */
+@media (max-width: 900px) {
+  .atmosStill {
+    opacity: 0.7;
+  }
+}
+
+/* Measured too slow for the full air: keep the grain and the dots, drop the
+   light and the weather. Set by Atmosphere after one second of frames. */
+:global([data-lean]) .atmosLight,
+:global([data-lean]) .atmosMesh {
+  display: none;
+}
+
+:global([data-lean]) .atmosStill {
+  opacity: 0.75;
+}

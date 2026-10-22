@@ -28,7 +28,7 @@ export function OrbisFeatures() {
 
   return (
     <section id="features" className={cx(styles.section, styles.features)} aria-labelledby="orbis-features-title">
-      <div className="container">
+      <div className="container" data-rail="what is inside">
         <Reveal as="h2" id="orbis-features-title" className={cx(styles.sectionTitle, styles.center)}>
           {orbisCopy.features.heading}
         </Reveal>
@@ -56,7 +56,14 @@ function FeatureComposition({ id, title, copy, index, upcoming }: { id: OrbisCap
   const [ref, inView] = useInView<HTMLDivElement>(0.25);
   const tilt = useTilt<HTMLDivElement>(6);
   return (
-    <article className={cx(styles.feature, index % 2 === 1 && styles.featureFlip, inView && styles.inView)} aria-labelledby={`orbis-feature-${id}`}>
+    <article
+      className={cx(styles.feature, index % 2 === 1 && styles.featureFlip, inView && styles.inView)}
+      aria-labelledby={`orbis-feature-${id}`}
+      // The chapter numeral behind the act, and the temperature this world is
+      // graded to (see .feature[data-world] in Orbis.module.css).
+      data-chapter={String(index + 1).padStart(2, "0")}
+      data-world={id}
+    >
       <div className={cx("container", styles.featureGrid)}>
         <div className={styles.featureText}>
           <Reveal as="p" className={cx("eyebrow", styles.featureIndex)} variant="fade">
@@ -80,6 +87,7 @@ function FeatureComposition({ id, title, copy, index, upcoming }: { id: OrbisCap
             tilt.current = node;
           }}
           className={styles.featureStage}
+          data-cursor="drawing"
         >
           <div className={styles.featureDepth}>
             <FeatureVisual id={id} />
