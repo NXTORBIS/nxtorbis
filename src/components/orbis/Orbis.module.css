@@ -1158,12 +1158,12 @@
   display: grid;
   grid-template-columns: repeat(15, 1fr);
   gap: 2.6%;
+  width: 100%;
 }
 
 .toolGridCompact {
   grid-template-columns: repeat(8, 1fr);
   gap: 4%;
-  width: 100%;
 }
 
 .toolCell {
@@ -1929,7 +1929,7 @@
   display: none;
   float: left;
   width: 0;
-  margin-left: 1.6rem;
+  margin-left: 1rem;
   opacity: 0;
   transform: translateY(-50%);
   transition: opacity 600ms var(--ix-move, cubic-bezier(0.22, 1, 0.36, 1));
@@ -1978,8 +1978,7 @@
 }
 
 .spineLink:hover .spineName,
-.spineLink:focus-visible .spineName,
-.spineActive .spineName {
+.spineLink:focus-visible .spineName {
   opacity: 1;
   transform: translateX(0);
 }
@@ -1987,7 +1986,8 @@
 .spineActive .spineDot {
   border-color: var(--ob-accent);
   background: var(--ob-accent);
-  transform: scale(1.3);
+  transform: scale(1.5);
+  box-shadow: 0 0 0 4px rgba(237, 177, 102, 0.14);
 }
 
 .spineActive .spineName {
@@ -2000,7 +2000,8 @@
   border-radius: 4px;
 }
 
-@media (min-width: 1200px) {
+/* A name needs room to its right; below this the copy column is already there. */
+@media (min-width: 1440px) {
   .spine {
     display: block;
   }
