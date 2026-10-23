@@ -339,3 +339,66 @@
     animation: none;
   }
 }
+
+/* What was sent, shown back. */
+.sentSummary {
+  display: grid;
+  gap: 0.9rem;
+  width: 100%;
+  margin: var(--space-5) 0 0;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+
+.sentSummary div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.sentSummary dt {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.sentSummary dd {
+  margin: 0;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.sentMessage {
+  max-height: 9rem;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.sentActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: var(--space-5);
+}
+
+.sentCopy {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border-strong, rgba(236, 232, 224, 0.18));
+  border-radius: 999px;
+  background: none;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.sentCopy:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}

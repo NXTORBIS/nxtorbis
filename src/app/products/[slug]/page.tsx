@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { advocatePlans, company, products } from "@/content/site";
 import { pageMeta } from "@/lib/meta";
 import { PageHero } from "@/components/layout/PageHero";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ProductVisual } from "@/components/visuals/ProductVisual";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/lib/Reveal";
@@ -37,6 +38,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
 
   return (
     <>
+      <Breadcrumbs trail={[{ label: "Products", href: "/products" }, { label: product.name }]} />
       <PageHero
         eyebrow={`Product ${product.index}`}
         size="h1"

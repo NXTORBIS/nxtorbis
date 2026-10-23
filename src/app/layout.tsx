@@ -4,6 +4,10 @@ import { company, seo } from "@/content/site";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SiteAir } from "@/components/layout/SiteAir";
+import { CommandPalette } from "@/components/ui/CommandPalette";
+import { MobileActionBar } from "@/components/layout/MobileActionBar";
+import { PageRail } from "@/components/layout/PageRail";
+import { Toaster } from "@/components/ui/Toaster";
 import { ScrollRail } from "@/components/sections/ScrollRail";
 import { Cursor } from "@/components/ui/Cursor";
 import { GlassRuntime } from "@/components/ui/GlassRuntime";
@@ -128,7 +132,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <ScrollRail />
         <main id="main">{children}</main>
+        <PageRail />
+        <MobileActionBar />
         <Footer />
+        <CommandPalette />
+        <Toaster />
         <Cursor />
         <GlassRuntime />
         <LoadingExperience />

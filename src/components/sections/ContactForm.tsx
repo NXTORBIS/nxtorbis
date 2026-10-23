@@ -8,11 +8,15 @@ import { hasBackend, submitContact, type SubmitResult } from "@/lib/contact";
 import { Button } from "@/components/ui/Button";
 import { GlassSelect } from "@/components/ui/GlassSelect";
 import { ArrowUpRight, Check } from "@/components/ui/Icons";
+import { toast } from "@/components/ui/Toaster";
 import styles from "./ContactForm.module.css";
 
 type Values = { name: string; email: string; service: string; message: string };
 type Errors = Partial<Record<keyof Values, string>>;
 type Status = "idle" | "submitting" | "sent" | "mailto" | "error";
+
+/** Where an unsent message waits. This browser only; never sent anywhere. */
+const DRAFT_KEY = "nxtorbis:contact-draft";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -46,6 +50,7 @@ export function ContactForm() {
     message: "",
   });
   const [errors, setErrors] = useState<Errors>({});
+  const [restored, setRestored] = useState(false);
   const [touched, setTouched] = useState<Partial<Record<keyof Values, boolean>>>({});
   const [status, setStatus] = useState<Status>("idle");
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -80,12 +85,49 @@ export function ContactForm() {
     setStatus("submitting");
     const res = await submitContact({ ...values, context });
     setResult(res);
-    if (res.kind === "sent") setStatus("sent");
+    if (res.kind === "sent") {
+      setStatus("sent");
+      try {
+        window.localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
+    }
     else if (res.kind === "mailto") {
       setStatus("mailto");
       window.location.href = res.href;
     } else setStatus("error");
   };
+
+  // The draft, kept in this browser only. A refresh, a closed tab or a
+  // misdirected click should not cost somebody the message they wrote.
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(DRAFT_KEY);
+      if (!saved) return;
+      const parsed = JSON.parse(saved) as Partial<Values>;
+      if (!parsed || typeof parsed !== "object") return;
+      const hasText = Object.values(parsed).some((v) => typeof v === "string" && v.trim());
+      if (!hasText) return;
+      setValues((v) => ({ ...v, ...parsed }));
+      setRestored(true);
+    } catch {
+      /* storage unavailable, or a draft we cannot read: start clean */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (status === "sent") return;
+    const t = window.setTimeout(() => {
+      try {
+        const hasText = Object.values(values).some((v) => v.trim());
+        if (hasText) window.localStorage.setItem(DRAFT_KEY, JSON.stringify(values));
+      } catch {
+        /* nothing to do: the draft is a convenience, not a feature */
+      }
+    }, 400);
+    return () => window.clearTimeout(t);
+  }, [values, status]);
 
   const disabled = status === "submitting" || status === "sent";
 
@@ -100,8 +142,47 @@ export function ContactForm() {
         <span className={styles.successIcon}>
           <Check size={20} />
         </span>
-        <h3 className="t-h3">Thank you — your message has been sent.</h3>
+        <h3 className="t-h3">Sent. Thank you.</h3>
         <p className="t-body">We will read it carefully and reply to {values.email}.</p>
+
+        {/* What went, so nobody has to wonder what they actually said. */}
+        <dl className={styles.sentSummary}>
+          <div>
+            <dt>From</dt>
+            <dd>
+              {values.name} · {values.email}
+            </dd>
+          </div>
+          <div>
+            <dt>About</dt>
+            <dd>{values.service}</dd>
+          </div>
+          <div>
+            <dt>Message</dt>
+            <dd className={styles.sentMessage}>{values.message}</dd>
+          </div>
+        </dl>
+
+        <div className={styles.sentActions}>
+          <button
+            type="button"
+            className={styles.sentCopy}
+            onClick={() => {
+              void navigator.clipboard
+                ?.writeText(`${values.name} <${values.email}>
+${values.service}
+
+${values.message}`)
+                .then(() => toast("Copy of your message copied"))
+                .catch(() => toast("Could not copy — select the text instead"));
+            }}
+          >
+            Keep a copy
+          </button>
+          <a className={styles.sentCopy} href={`mailto:${company.email}`}>
+            Email us directly
+          </a>
+        </div>
       </div>
     );
   }
@@ -117,6 +198,13 @@ export function ContactForm() {
           {String(complete).padStart(2, "0")} / 04
         </span>
       </div>
+
+      {restored && (
+        <p className={cx("glass", "glass--l1", "glass--pill", styles.context)} role="status">
+          <span className="num">DRAFT</span>
+          <span>Picked up where you left off. It was kept in this browser only.</span>
+        </p>
+      )}
 
       {context && (
         <p className={cx("glass", "glass--l1", "glass--pill", styles.context)}>
