@@ -27,7 +27,10 @@ export default function ProductsPage() {
                 <a href={`/products/${p.slug}`} className={styles.indexLink}>
                   <span className="num">{p.index}</span>
                   <span>{p.name}</span>
-                  <span className={styles.indexTag}>{p.positioning}</span>
+                  <span className={styles.indexMeta}>
+                    <span className={styles.indexTag}>{p.positioning}</span>
+                    <span className={styles.indexTech}>{p.technologies.join(" · ")}</span>
+                  </span>
                 </a>
               </li>
             ))}

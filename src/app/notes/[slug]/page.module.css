@@ -46,3 +46,41 @@
 .back a {
   color: var(--accent);
 }
+
+/* What to read next. */
+.next {
+  margin-top: clamp(3rem, 7vw, 5rem);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.nextLink {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: var(--space-4);
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color var(--dur-fast) var(--ease-out), transform var(--dur-med) var(--ease-out);
+}
+
+.nextLink:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.nextTitle {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.nextStandfirst {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--text-2);
+}

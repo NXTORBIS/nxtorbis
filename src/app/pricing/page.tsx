@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { advocatePlans, cta, pricingFactors, seo } from "@/content/site";
+import { advocateMatrix, advocatePlans, cta, pricingFactors, seo } from "@/content/site";
 import { pageMeta } from "@/lib/meta";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/lib/Reveal";
@@ -145,6 +145,53 @@ export default function PricingPage() {
             Plans apply to the Advocate Office Management System only. Custom software, product development and
             other services are quoted per project.
           </p>
+
+          {/* The same three plans, side by side, so they can be compared
+              rather than remembered. Every row comes from the plans above. */}
+          <Reveal className={styles.matrixWrap} delay={120}>
+            <table className={styles.matrix}>
+              <caption className="t-xs">What each plan includes</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Included</th>
+                  {advocatePlans.plans.map((plan) => (
+                    <th key={plan.name} scope="col" className={"featured" in plan && plan.featured ? styles.matrixFeatured : undefined}>
+                      {plan.name}
+                      <span>
+                        {advocatePlans.currency} {plan.price}
+                        {advocatePlans.period}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {advocateMatrix.rows.map((row) => (
+                  <tr key={row.label}>
+                    <th scope="row">{row.label}</th>
+                    {( ["basic", "pro", "enterprise"] as const).map((key) => {
+                      const value = row[key];
+                      return (
+                        <td key={key} className={key === "pro" ? styles.matrixFeatured : undefined}>
+                          {typeof value === "string" ? (
+                            value
+                          ) : value ? (
+                            <span className={styles.yes} aria-label="Included">
+                              <Check size={14} />
+                            </span>
+                          ) : (
+                            <span className={styles.no} aria-label="Not included">
+                              —
+                            </span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Reveal>
         </div>
       </section>
 

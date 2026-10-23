@@ -60,3 +60,20 @@
     grid-column: 4 / span 8;
   }
 }
+
+/* The metadata row: the same two facts, in the same place, for every product. */
+.indexMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+.indexTech {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}

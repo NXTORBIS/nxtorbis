@@ -7,6 +7,7 @@ import { pageMeta } from "@/lib/meta";
 import { PageHero } from "@/components/layout/PageHero";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Reveal } from "@/lib/Reveal";
+import { ReadingProgress } from "@/components/ui/ReadingProgress";
 import styles from "./page.module.css";
 
 export function generateStaticParams() {
@@ -25,11 +26,15 @@ const dateOf = (iso: string) =>
 
 export default async function NotePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const note = notes.find((n) => n.slug === slug);
+  const index = notes.findIndex((n) => n.slug === slug);
+  const note = notes[index];
   if (!note) notFound();
+  // Something to read next, wrapping round at the end rather than stopping.
+  const next = notes[(index + 1) % notes.length];
 
   return (
     <>
+      <ReadingProgress />
       <Breadcrumbs trail={[{ label: "Notes", href: "/notes" }, { label: note.title }]} />
       <PageHero
         eyebrow="Engineering note"
@@ -64,6 +69,16 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
                 )}
               </Reveal>
             ))}
+            {next.slug !== note.slug && (
+              <aside className={styles.next} aria-label="Next note">
+                <p className="eyebrow">Read next</p>
+                <Link href={`/notes/${next.slug}`} className={styles.nextLink}>
+                  <span className={styles.nextTitle}>{next.title}</span>
+                  <span className={styles.nextStandfirst}>{next.standfirst}</span>
+                </Link>
+              </aside>
+            )}
+
             <p className={styles.back}>
               <Link href="/notes">All engineering notes</Link>
             </p>
