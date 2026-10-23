@@ -322,6 +322,29 @@ export const advocatePlans = {
   ],
 } as const;
 
+/**
+ * The same plans, as a comparison.
+ *
+ * Every row and every mark below is taken from `advocatePlans` above, which
+ * is the pricing page as published. Nothing is added: a row exists because a
+ * plan lists it, and a plan is marked for a row because that plan names it or
+ * inherits it ("includes all Basic plan features").
+ */
+export const advocateMatrix = {
+  rows: [
+    { label: "Case & client management", basic: true, pro: true, enterprise: true },
+    { label: "Calendar & appointment scheduling", basic: true, pro: true, enterprise: true },
+    { label: "Secure document storage", basic: true, pro: true, enterprise: true },
+    { label: "Email & SMS reminders", basic: true, pro: true, enterprise: true },
+    { label: "Team collaboration & multi-user access", basic: false, pro: true, enterprise: true },
+    { label: "Integration with cloud storage", basic: false, pro: true, enterprise: true },
+    { label: "Priority support", basic: false, pro: true, enterprise: true },
+    { label: "Advanced security & compliance", basic: false, pro: false, enterprise: true },
+    { label: "Dedicated account manager", basic: false, pro: false, enterprise: true },
+    { label: "Users included", basic: "1", pro: "10", enterprise: "25" },
+  ],
+} as const;
+
 /* ------------------------------------------------------------------------ */
 /* Technology ecosystem                                                      */
 /* ------------------------------------------------------------------------ */

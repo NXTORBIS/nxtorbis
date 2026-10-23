@@ -828,3 +828,52 @@ body::after {
     clip-path: none;
   }
 }
+
+
+/* ---------------------------------------------------------------- craft --
+   The small things that are only noticed when they are missing. */
+:root {
+  caret-color: var(--accent);
+}
+
+::selection {
+  background: rgba(237, 177, 102, 0.26);
+  color: #fffaf1;
+}
+
+/* One focus ring for the whole site, rather than the browser's. */
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(237, 177, 102, 0.12);
+  border-radius: 4px;
+}
+
+/* Headings should not leave one word alone on a line. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Anchors land below the fixed navigation rather than under it. */
+:target {
+  scroll-margin-top: calc(var(--nav-h, 4.5rem) + 1.5rem);
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  nav,
+  footer,
+  .skip-link {
+    display: none !important;
+  }
+}

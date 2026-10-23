@@ -335,3 +335,41 @@
     display: none;
   }
 }
+
+/* Condensed: past the first screen the bar gives back its height, the links
+   tighten, and the wordmark shrinks toward its mark. */
+.scrolled .inner {
+  padding-block: 0.3rem;
+}
+
+.scrolled .actions .cta {
+  transform: scale(0.94);
+}
+
+.scrolled .brand {
+  transform: scale(0.82);
+  transform-origin: left center;
+}
+
+.scrolled .link {
+  height: 2.1rem;
+  font-size: 0.66rem;
+}
+
+.inner,
+.brand,
+.link {
+  transition:
+    padding var(--dur-med) var(--ease-out),
+    transform var(--dur-med) var(--ease-out),
+    height var(--dur-med) var(--ease-out),
+    font-size var(--dur-med) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inner,
+  .brand,
+  .link {
+    transition: none;
+  }
+}

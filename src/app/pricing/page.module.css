@@ -204,3 +204,76 @@
     gap: var(--space-8);
   }
 }
+
+/* The comparison. On a phone it scrolls sideways inside its own frame rather
+   than squeezing ten rows into 390 pixels. */
+.matrixWrap {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.matrix {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.matrix caption {
+  padding: 1rem 1.2rem 0;
+  color: var(--text-3);
+  text-align: left;
+}
+
+.matrix th,
+.matrix td {
+  padding: 0.85rem 1.2rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.matrix thead th {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.matrix thead th span {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+
+.matrix tbody th {
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.matrix td {
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix tbody tr:last-child th,
+.matrix tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.matrixFeatured {
+  background: rgba(237, 177, 102, 0.06);
+}
+
+.yes {
+  display: inline-flex;
+  color: var(--accent);
+}
+
+.no {
+  color: var(--text-3);
+}
