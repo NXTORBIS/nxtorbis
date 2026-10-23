@@ -74,9 +74,13 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
                   <>
                     Software, enhanced <span className="t-serif">with</span> AI.
                   </>
-                ) : (
+                ) : product.positioning === "Customer relationship management" ? (
                   <>
                     Software for the <span className="t-serif">relationships</span> a business runs on.
+                  </>
+                ) : (
+                  <>
+                    A browser, with a <span className="t-serif">mind</span> of its own.
                   </>
                 )}
               </h2>
@@ -90,6 +94,24 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
               {product.name} is one of the software products developed by {company.legalName}. We present our
               products at a high level here; for details on availability, plans and fit, please get in touch.
             </Reveal>
+
+            {product.audience && (
+              <Reveal as="p" className={`t-body ${styles.audience}`} delay={140}>
+                <span className="eyebrow">Who it is for</span>
+                {product.audience}
+              </Reveal>
+            )}
+
+            {product.does && (
+              <Reveal as="div" className={styles.does} delay={150}>
+                <p className="eyebrow">What it does</p>
+                <ul>
+                  {product.does.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </Reveal>
+            )}
 
             <Reveal as="dl" className={styles.facts} delay={160}>
               <div>
@@ -117,6 +139,11 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
             </Reveal>
 
             <Reveal className={styles.actions} delay={200}>
+              {product.link && (
+                <Button href={product.link.href} external={product.link.external} variant="secondary" arrow>
+                  {product.link.label}
+                </Button>
+              )}
               <Button href={`/contact?intent=product&product=${encodeURIComponent(product.name)}`} variant="primary" arrow intensity="major" fillFrom="diagonal">
                 Ask about this product
               </Button>
