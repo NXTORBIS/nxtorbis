@@ -478,6 +478,26 @@ html {
 /* --------------------------------------------------------------------------
    Reveal engine — distinct behaviours per content type, not one fade-up
    -------------------------------------------------------------------------- */
+/* The first screen reveals itself without waiting for script: same movement,
+   started at first paint. Anything further down keeps the observed version,
+   which only runs when it is actually approached. */
+[data-reveal-now] {
+  animation: reveal-now var(--ix-reveal, 620ms) var(--ix-enter, cubic-bezier(0.16, 1, 0.3, 1)) var(--reveal-delay, 0ms) both;
+}
+
+@keyframes reveal-now {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal-now] {
+    animation: none;
+  }
+}
+
 [data-reveal] {
   opacity: 0;
   transition:
