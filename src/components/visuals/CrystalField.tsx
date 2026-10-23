@@ -114,7 +114,12 @@ function Crystal({ id, c }: { id: string; c: CrystalSpec }) {
   const g2 = PALETTE[h2];
   const g3 = PALETTE[h3];
   const silhouette = p([T, R, B, L]);
-  const sharp = !c.blur;
+  // The brushed-metal filter is two specular lights, a turbulence grain and
+  // four composites. On a crystal under 110px it is detail nobody can resolve,
+  // and every drifting one re-renders the whole chain each frame — measured at
+  // twelve frames a second across the hero. The big ones keep it; the small
+  // ones live on their gradients, which is what reads at that size anyway.
+  const sharp = !c.blur && c.w >= 110;
 
   /**
    * Environment map. Every facet samples this same vertical "world" —
@@ -144,6 +149,10 @@ function Crystal({ id, c }: { id: string; c: CrystalSpec }) {
       transform={`translate(${c.x} ${c.y}) rotate(${c.rot})`}
       style={{ opacity: c.opacity ?? 1 }}
       filter={c.blur ? `url(#${id}-blur)` : undefined}
+      /* A blurred crystal is depth, not movement. Drifting one re-runs its
+         Gaussian blur every frame, which cost the home page about half its
+         frame rate between them, and nobody can see a shard this soft move. */
+      data-soft={c.blur ? "" : undefined}
     >
       <defs>
         {c.blur && (
@@ -303,7 +312,7 @@ function specs(
 
   if (variant === "hero") {
     return {
-      dust: 90,
+      dust: 52,
       crystals: [
         // far, blurred background shards
         { x: 1030, y: 130, w: 62, h: 200, rot: 28, hues: alt(), blur: 6, opacity: 0.45, depth: 0.4, shape: "shard" },
@@ -366,7 +375,7 @@ function specs(
 
   if (variant === "product") {
     return {
-      dust: 26,
+      dust: 12,
       crystals: [
         { x: 300 + r() * 40, y: 200, w: 120, h: 270, rot: -10 + r() * 20, hues: pick(), depth: 1, glow: true },
         { x: 470, y: 120, w: 40, h: 120, rot: 30, hues: alt(), blur: 3, opacity: 0.7, depth: 0.6 },
@@ -377,7 +386,7 @@ function specs(
   }
   if (variant === "cta") {
     return {
-      dust: 60,
+      dust: 38,
       crystals: [
         { x: 600, y: 440, w: 200, h: 470, rot: 10, hues: pick(), depth: 1, glow: true, opacity: 0.9 },
         { x: 330, y: 300, w: 70, h: 200, rot: -30, hues: alt(), blur: 4, opacity: 0.6, depth: 0.6 },
@@ -493,6 +502,19 @@ export function CrystalField({
 
   const sorted = [...crystals].sort((a, b) => a.depth - b.depth);
   const dr = rng(seed * 7919 + 13);
+
+  // A field that is not on screen animates nothing. The home page has one in
+  // almost every section, and they were all drifting at once.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => el.classList.toggle(styles.idle, !entry.isIntersecting),
+      { rootMargin: "20% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
     <svg

@@ -94,6 +94,21 @@ export function Footer() {
               </ul>
             </div>
             <div className={styles.col}>
+              <h2 className={styles.colTitle}>Writing</h2>
+              <ul>
+                <li>
+                  <Link href="/notes" className={styles.link}>
+                    Engineering notes
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className={styles.link}>
+                    Privacy Policy
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className={styles.col}>
               <h2 className={styles.colTitle}>Contact</h2>
               <ul>
                 <li>
