@@ -123,3 +123,42 @@
     top: calc(var(--nav-h) + 2rem);
   }
 }
+
+/* Who it is for, and what it does. Both appear only when the product has
+   published material behind them, so a thin product simply shows less. */
+.audience {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 46ch;
+}
+
+.does {
+  display: grid;
+  gap: 0.7rem;
+  max-width: 46ch;
+}
+
+.does ul {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.does li {
+  position: relative;
+  padding-left: 1.4rem;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.does li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 7px;
+  height: 1px;
+  background: var(--accent);
+}

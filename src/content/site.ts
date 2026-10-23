@@ -147,13 +147,27 @@ export type Product = {
   index: string;
   slug: string;
   name: string;
-  positioning: "AI-powered enhancement" | "AI + Blockchain" | "Customer relationship management";
+  positioning: "AI-powered enhancement" | "AI + Blockchain" | "Customer relationship management" | "Desktop browser with AI";
   technologies: string[];
-  /** One high-level sentence. Must not describe functionality. */
+  /** The problem it exists for, in one or two sentences. */
   intro: string;
   /** Optional context drawn from the existing site. */
   context?: string;
-  visual: "advocate" | "birthday" | "review" | "genuine" | "brixora";
+  /**
+   * Who it is for. Only where it is actually known — the published plans say
+   * this for the Advocate system, and Brixora360 says it by being closed to
+   * public sign-up. The others carry none rather than a guess.
+   */
+  audience?: string;
+  /**
+   * What it does. Only from published material: the Advocate lines are the
+   * features listed on the pricing page, the Orbis lines are in its release
+   * notes. A product with nothing published says nothing here.
+   */
+  does?: string[];
+  /** Where it can be seen, when there is somewhere to send people. */
+  link?: { label: string; href: string; external?: boolean };
+  visual: "advocate" | "birthday" | "review" | "genuine" | "brixora" | "orbis";
   hasPlans?: boolean;
 };
 
@@ -165,44 +179,43 @@ export const products: Product[] = [
     positioning: "AI-powered enhancement",
     technologies: ["Software", "AI"],
     intro:
-      "A software product built for legal practice management, developed by NxtOrbis® with AI-powered enhancement.",
+      "A legal practice runs on things that must not be lost: the case, the client, the date, the document. This keeps them in one place, so a practice does not depend on remembering.",
     context:
       "Designed for independent lawyers, small law firms and larger legal enterprises alike.",
+    audience: "Independent lawyers, small firms, and legal enterprises with teams to coordinate.",
+    // Exactly the features published on the pricing page, nothing added.
+    does: [
+      "Case and client management in one record",
+      "Calendar and appointment scheduling",
+      "Secure document storage",
+      "Email and SMS reminders",
+      "Team collaboration with multi-user access",
+      "Integration with cloud storage",
+    ],
     visual: "advocate",
     hasPlans: true,
   },
   {
     index: "02",
-    slug: "birthday-reminder",
-    name: "Birthday Reminder App",
-    positioning: "AI-powered enhancement",
+    slug: "orbis",
+    name: "Orbis",
+    positioning: "Desktop browser with AI",
     technologies: ["Software", "AI"],
     intro:
-      "An application built around a simple, human need — remembering the people who matter — developed with AI-powered enhancement.",
-    visual: "birthday",
+      "A browser for Windows with Orion beside every page you open — ask about what you are reading, have it acted on, or research a question and get the sources back with the answer.",
+    context: "Free to download, and what you do in it stays on your computer.",
+    audience: "Anyone who works in a browser all day and would rather not leave it to ask a question.",
+    does: [
+      "Tabs, workspaces, history, downloads and per-site permissions",
+      "Ad blocking built in, with lists that update in the background",
+      "Orion answers about the page you are on, with its sources",
+      "Chats, bookmarks and profiles kept in files on your own computer",
+    ],
+    link: { label: "Explore Orbis", href: "/orbis" },
+    visual: "orbis",
   },
   {
     index: "03",
-    slug: "true-review",
-    name: "True Review System",
-    positioning: "AI + Blockchain",
-    technologies: ["Software", "AI", "Blockchain"],
-    intro:
-      "A review system developed to bring trust and authenticity to reviews, combining AI with blockchain.",
-    visual: "review",
-  },
-  {
-    index: "04",
-    slug: "genuine-product-checker",
-    name: "Genuine Product Checker",
-    positioning: "AI + Blockchain",
-    technologies: ["Software", "AI", "Blockchain"],
-    intro:
-      "A product developed to support the authenticity of products, combining AI with blockchain for data integrity and trust.",
-    visual: "genuine",
-  },
-  {
-    index: "05",
     slug: "brixora360",
     name: "Brixora360",
     positioning: "Customer relationship management",
@@ -210,9 +223,40 @@ export const products: Product[] = [
     // Taken from the product itself: brixora360.com signs in to "Brixora360 CRM",
     // carries the line "Build Smarter. Grow Faster." and names NxtOrbis as its maker.
     intro:
-      "A customer relationship management product developed by NxtOrbis® — built smarter, to grow faster.",
+      "Customer relationships are mostly memory: who asked for what, when, and what was promised. Brixora360 is where a business keeps that instead of carrying it.",
     context: "Accounts are provided by NxtOrbis®; there is no public sign-up.",
+    audience: "Businesses we set up and support directly, rather than self-service sign-ups.",
     visual: "brixora",
+  },
+  {
+    index: "04",
+    slug: "true-review",
+    name: "True Review System",
+    positioning: "AI + Blockchain",
+    technologies: ["Software", "AI", "Blockchain"],
+    intro:
+      "A review is only worth reading if it is real. This one is built so that a review, once written, can be shown to be the review that was written — combining AI with blockchain for trust and authenticity.",
+    visual: "review",
+  },
+  {
+    index: "05",
+    slug: "genuine-product-checker",
+    name: "Genuine Product Checker",
+    positioning: "AI + Blockchain",
+    technologies: ["Software", "AI", "Blockchain"],
+    intro:
+      "The question a counterfeit cannot survive is a simple one: is this the thing it says it is? Built to answer it, combining AI with blockchain for data integrity and trust.",
+    visual: "genuine",
+  },
+  {
+    index: "06",
+    slug: "birthday-reminder",
+    name: "Birthday Reminder App",
+    positioning: "AI-powered enhancement",
+    technologies: ["Software", "AI"],
+    intro:
+      "Built around a simple, human need — remembering the people who matter, on the day it counts — with AI-powered enhancement.",
+    visual: "birthday",
   },
 ];
 
@@ -337,7 +381,7 @@ export const about = {
   team:
     "At our core, we are a team of experienced developers, designers and strategists who believe in using technology to drive meaningful impact — whether that means using AI for automation, strengthening security or optimising business processes.",
   productsLine:
-    "Alongside client work, we develop our own software products: Advocate Office Management System, Birthday Reminder App, True Review System, Genuine Product Checker and Brixora360.",
+    "Alongside client work, we develop our own software products: Orbis, the Advocate Office Management System, Brixora360, True Review System, Genuine Product Checker and the Birthday Reminder App.",
   vision:
     "To be a global leader in software product innovation, delivering cutting-edge solutions that empower businesses and individuals to achieve more through technology.",
   mission: [
@@ -435,7 +479,7 @@ export const seo = {
   products: {
     title: "Software Products | NxtOrbis®",
     description:
-      "Software products developed by NxtOrbis®: Advocate Office Management System, Birthday Reminder App, True Review System, Genuine Product Checker and Brixora360.",
+      "Software products developed by NxtOrbis®: Orbis, the Advocate Office Management System, Brixora360, True Review System, Genuine Product Checker and the Birthday Reminder App.",
   },
   pricing: {
     title: "Pricing | NxtOrbis®",
