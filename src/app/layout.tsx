@@ -3,6 +3,7 @@ import { Inter, Inter_Tight, Instrument_Serif, JetBrains_Mono } from "next/font/
 import { company, seo } from "@/content/site";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { SiteAir } from "@/components/layout/SiteAir";
 import { ScrollRail } from "@/components/sections/ScrollRail";
 import { Cursor } from "@/components/ui/Cursor";
 import { GlassRuntime } from "@/components/ui/GlassRuntime";
@@ -120,6 +121,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="skip-link">
           Skip to content
         </a>
+        <SiteAir />
         <Navbar />
         <ScrollRail />
         <main id="main">{children}</main>

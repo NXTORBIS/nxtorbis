@@ -380,6 +380,28 @@ export const contactServiceOptions = [
   "Other",
 ] as const;
 
+/**
+ * What the contact form actually does, step by step. Every line describes
+ * mechanics you can verify on the page: the form composes the message in the
+ * visitor's own email program (lib/contact.ts has no endpoint set), so nothing
+ * is sent until they send it, and the reply comes from the same address.
+ * No response times are claimed, because none have been set.
+ */
+export const contactAfter = [
+  {
+    title: "It opens in your own email",
+    body: "The form fills in a message in your email program. You can read every word of it before it goes, and nothing reaches us until you press send.",
+  },
+  {
+    title: "It arrives with a person",
+    body: `Your message lands in ${company.email}, which the people who would build the work read themselves. There is no ticket queue in between.`,
+  },
+  {
+    title: "We come back with questions",
+    body: "The first reply is usually questions rather than a quote: what the software has to do, for whom, and what success looks like. The proposal follows the answers.",
+  },
+] as const;
+
 export const pricingFactors = [
   { title: "Scope", body: "What the software needs to do, and for whom." },
   { title: "Complexity", body: "The depth of logic, data and edge cases involved." },

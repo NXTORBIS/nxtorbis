@@ -35,6 +35,31 @@
   transform-origin: center;
 }
 
+/* The soft shards hold still. Each carries a Gaussian blur, and a blur that
+   moves is re-rendered every frame: measured, the drifting ones cost the home
+   page roughly half its frame rate, and a shard this out of focus reads as
+   depth whether it moves or not. */
+.layer > g[data-soft] {
+  animation: none;
+}
+
+/* Product artwork is a thumbnail: five of them on a page, each with its own
+   metal and rim-glow filters. They hold still — measured at 20fps drifting,
+   61 still — and the composition is what carries them anyway. */
+.product .layer > g,
+.product .dustNear,
+.product .dustFar {
+  animation: none;
+}
+
+/* Nothing animates in a field that is off screen. */
+.idle .layer > g,
+.idle .rays,
+.idle .dustNear,
+.idle .dustFar {
+  animation-play-state: paused;
+}
+
 @keyframes cf-float {
   from {
     translate: var(--fx1, 0) var(--fy1, -6px);
@@ -59,8 +84,11 @@
     opacity 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* The rays are a single polygon pair under an 18px Gaussian blur. Rotating
+   them re-rendered that blur on every frame for a movement nobody reports
+   seeing; they hold their angle now and the light still falls across the
+   frame. */
 .rays {
-  animation: cf-rays 22s ease-in-out infinite alternate;
   transform-box: view-box;
   transform-origin: 80% 0%;
 }
