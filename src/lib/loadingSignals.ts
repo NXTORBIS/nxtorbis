@@ -32,7 +32,7 @@ export function trackReadiness({
   onProgress,
   onReady,
   timeout = 5000,
-  logoSrc = "/brand/nxtorbis-wordmark.png",
+  logoSrc = "/brand/nxtorbis-wordmark.webp",
 }: {
   onProgress: (progress: number) => void;
   onReady: () => void;

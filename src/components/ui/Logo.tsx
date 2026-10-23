@@ -3,8 +3,8 @@ import { cx } from "@/lib/cx";
 
 /** The official wordmark and its true proportions (1183 x 184). Exported so
  *  every surface that draws the mark scales it identically. */
-export const LOGO_SRC = "/brand/nxtorbis-wordmark.png";
-export const LOGO_RATIO = 1183 / 184;
+export const LOGO_SRC = "/brand/nxtorbis-wordmark.webp";
+export const LOGO_RATIO = 560 / 87;
 
 type Props = {
   /** Rendered height in px; width follows the official proportions (1183 x 184). */

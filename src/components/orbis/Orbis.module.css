@@ -2609,7 +2609,7 @@
 }
 
 .notesSection strong {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ob-text);
 }
 
@@ -3488,7 +3488,7 @@
   z-index: -1;
   width: min(120vw, 90rem);
   aspect-ratio: 1321 / 399;
-  background: url("/orbis/orbis-logo.png") center / contain no-repeat;
+  background: url("/orbis/orbis-logo.webp") center / contain no-repeat;
   opacity: 0.02;
   transform: translate(-50%, -50%);
   pointer-events: none;
