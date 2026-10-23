@@ -39,7 +39,8 @@
    moves is re-rendered every frame: measured, the drifting ones cost the home
    page roughly half its frame rate, and a shard this out of focus reads as
    depth whether it moves or not. */
-.layer > g[data-soft] {
+.layer > g[data-soft],
+.layer > g[data-still] {
   animation: none;
 }
 
