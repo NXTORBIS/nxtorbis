@@ -20,8 +20,12 @@ import styles from "./HeroVisual.module.css";
  * until the real one is there, and nothing moves when it arrives either,
  * because the still was rendered from the field at rest.
  *
- * The poster is regenerated with the composition: see notes in the repo.
- * Without scripting, the still simply stays, which is the same picture.
+ * The live SVG is for machines that can afford it: a fine pointer, a window
+ * wide enough to show the composition, and at least six cores. Everywhere
+ * else the still stays, which is the same picture — the drift and the
+ * pointer tilt are all the live one adds.
+ *
+ * Without scripting, the still simply stays too.
  */
 export function HeroVisual() {
   const [live, setLive] = useState(false);
@@ -29,13 +33,27 @@ export function HeroVisual() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // Who gets the live crystals at all.
+    //
+    // Mounting them costs real main-thread time — measured on the deployed
+    // site, blocking time ran between 330ms and 980ms once they arrived. On a
+    // phone, or a machine with few cores, that is paid for a difference
+    // nobody can see: the still was rendered from this exact composition at
+    // rest, and the only thing the live one adds is a slow drift and a tilt
+    // toward the pointer, which a touch screen has no use for either.
+    const fine = window.matchMedia("(pointer: fine)").matches;
+    const roomy = window.matchMedia("(min-width: 1024px)").matches;
+    const cores = navigator.hardwareConcurrency ?? 4;
+    if (!fine || !roomy || cores < 6) return;
+
     let cancelled = false;
     const mount = () => !cancelled && setLive(true);
 
     // After the page has settled, not before: this is decoration arriving
     // behind a page somebody is already reading.
-    const idle = window.requestIdleCallback?.(mount, { timeout: 2500 });
-    const timer = idle === undefined ? window.setTimeout(mount, 1200) : undefined;
+    // Late, and only when the page has genuinely gone quiet.
+    const idle = window.requestIdleCallback?.(mount, { timeout: 4000 });
+    const timer = idle === undefined ? window.setTimeout(mount, 2500) : undefined;
 
     return () => {
       cancelled = true;
