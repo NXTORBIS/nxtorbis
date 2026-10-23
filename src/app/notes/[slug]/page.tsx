@@ -5,6 +5,7 @@ import { company } from "@/content/site";
 import { notes } from "@/content/notes";
 import { pageMeta } from "@/lib/meta";
 import { PageHero } from "@/components/layout/PageHero";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Reveal } from "@/lib/Reveal";
 import styles from "./page.module.css";
 
@@ -29,6 +30,7 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
+      <Breadcrumbs trail={[{ label: "Notes", href: "/notes" }, { label: note.title }]} />
       <PageHero
         eyebrow="Engineering note"
         title={note.title}
