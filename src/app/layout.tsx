@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Inter_Tight, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Inter_Tight, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { company, seo } from "@/content/site";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -11,18 +11,14 @@ import { Toaster } from "@/components/ui/Toaster";
 import { ScrollRail } from "@/components/sections/ScrollRail";
 import { Cursor } from "@/components/ui/Cursor";
 import { GlassRuntime } from "@/components/ui/GlassRuntime";
-import { LoadingExperience } from "@/components/loader/LoadingExperience";
+import { Entrance } from "@/components/loader/Entrance";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
+// One face for the whole site, in the two weights it actually uses. Inter and
+// Inter Tight are cuts of the same typeface, and carrying both cost a font
+// file of about 48KB for a difference almost nobody could name in running text.
 const interTight = Inter_Tight({
   subsets: ["latin"],
-  // 600 was used once, in one rule.
   weight: ["400", "500"],
   variable: "--font-inter-tight",
   display: "swap",
@@ -118,7 +114,7 @@ document.head.appendChild(s)}},7000)}catch(e){}})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${interTight.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${interTight.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
       <body>
         <script id="entrance-boot" dangerouslySetInnerHTML={{ __html: ENTRANCE_BOOT }} />
         <noscript>
@@ -139,7 +135,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toaster />
         <Cursor />
         <GlassRuntime />
-        <LoadingExperience />
+        <Entrance />
       </body>
     </html>
   );
