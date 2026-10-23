@@ -18,7 +18,7 @@ export function Hero() {
 
       <div className={`container ${styles.inner}`}>
         <div className={styles.copy}>
-          <Reveal as="p" className={`eyebrow ${styles.eyebrow}`} variant="fade">
+          <Reveal as="p" className={`eyebrow ${styles.eyebrow}`} variant="fade" immediate>
             {company.legalName}
           </Reveal>
 
@@ -34,12 +34,12 @@ export function Hero() {
             ]}
           />
 
-          <Reveal as="p" className={`t-lead ${styles.lead}`} delay={160}>
+          <Reveal as="p" className={`t-lead ${styles.lead}`} delay={160} immediate>
             A software development and software product company. We engineer custom software, mobile
             applications and our own products — combining software engineering with AI, blockchain and cloud.
           </Reveal>
 
-          <Reveal className={styles.actions} delay={240}>
+          <Reveal className={styles.actions} delay={240} immediate>
             <Button href={cta.primary.href} variant="primary" size="lg" arrow intensity="hero" magnetic fillFrom="left">
               {cta.primary.label}
             </Button>
@@ -50,7 +50,7 @@ export function Hero() {
         </div>
       </div>
 
-      <Reveal className={styles.foot} variant="fade" delay={500}>
+      <Reveal className={styles.foot} variant="fade" delay={500} immediate>
         <span className={styles.footLine} aria-hidden="true" />
         <p className={styles.tagline}>Software · Products · Intelligence</p>
         <span className={styles.footLine} aria-hidden="true" />
