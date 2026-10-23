@@ -235,7 +235,11 @@ export const products: Product[] = [
     positioning: "AI + Blockchain",
     technologies: ["Software", "AI", "Blockchain"],
     intro:
-      "A review is only worth reading if it is real. This one is built so that a review, once written, can be shown to be the review that was written — combining AI with blockchain for trust and authenticity.",
+      "A review is only worth reading if it is real. Everyone knows the ones that are bought, written in bulk or quietly edited after the fact — and once a reader suspects that, every honest review on the page is worth less too.",
+    context:
+      "Built so that a review can be shown to be the review that was written: AI to tell written-by-a-person from written-at-scale, and blockchain so the record of what was said cannot be rewritten later.",
+    audience:
+      "Businesses whose reputation is worth faking, and the readers deciding whether to believe it.",
     visual: "review",
   },
   {
@@ -245,7 +249,11 @@ export const products: Product[] = [
     positioning: "AI + Blockchain",
     technologies: ["Software", "AI", "Blockchain"],
     intro:
-      "The question a counterfeit cannot survive is a simple one: is this the thing it says it is? Built to answer it, combining AI with blockchain for data integrity and trust.",
+      "A counterfeit survives one question badly: is this the thing it says it is? The packaging can be copied, the label can be copied, the shop can be convincing — the one thing hard to copy is a record kept somewhere the seller does not control.",
+    context:
+      "Built around that record: blockchain for a history of a product that no one party can edit, and AI to read what is in front of you and check it against what should be there.",
+    audience:
+      "Brands whose products are worth copying, and the people who would rather check than hope.",
     visual: "genuine",
   },
   {
@@ -255,7 +263,10 @@ export const products: Product[] = [
     positioning: "AI-powered enhancement",
     technologies: ["Software", "AI"],
     intro:
-      "Built around a simple, human need — remembering the people who matter, on the day it counts — with AI-powered enhancement.",
+      "Nobody forgets a birthday on purpose. It goes the same way every time: you remember in the week, you mean to do something about it, and then you remember again two days late.",
+    context:
+      "An application built around that small, entirely human failure — so the people who matter hear from you on the day, rather than in the apology afterwards.",
+    audience: "Anyone who means to remember, and would like some help being the kind of person who does.",
     visual: "birthday",
   },
 ];
