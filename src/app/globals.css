@@ -15,7 +15,8 @@
 
   --text: #f7f3ec;
   --text-2: #b8b0a2;
-  --text-3: #857e72;
+  /* Raised from #857e72: it failed contrast against the page ground. */
+  --text-3: #9a9388;
   --text-inverse: #17110a;
 
   --border: rgba(255, 222, 176, 0.1);

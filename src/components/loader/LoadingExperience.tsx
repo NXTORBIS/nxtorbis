@@ -229,8 +229,8 @@ export function LoadingExperience() {
               className={styles.markImg}
               src={LOGO_SRC}
               alt=""
-              width={1183}
-              height={184}
+              width={560}
+              height={87}
               fetchPriority="high"
               draggable={false}
             />

@@ -18,7 +18,8 @@ const inter = Inter({
 
 const interTight = Inter_Tight({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  // 600 was used once, in one rule.
+  weight: ["400", "500"],
   variable: "--font-inter-tight",
   display: "swap",
 });
@@ -33,7 +34,9 @@ const instrumentSerif = Instrument_Serif({
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  // One weight. The 500 was used in two places and is indistinguishable from
+  // the 400 at the sizes the mono face appears, and it was a whole file.
+  weight: ["400"],
   variable: "--font-jetbrains-mono",
   display: "swap",
 });

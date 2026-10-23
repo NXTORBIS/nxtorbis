@@ -44,7 +44,7 @@ export function OrbisHero() {
               "Orbis" for search engines and screen readers. */}
           <h1 id="orbis-title" className={styles.heroTitle} style={delay(1080)}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className={styles.heroLogo} src="/orbis/orbis-logo.png" alt={orbisCopy.hero.title} width={1321} height={399} fetchPriority="high" />
+            <img className={styles.heroLogo} src="/orbis/orbis-logo.webp" alt={orbisCopy.hero.title} width={1321} height={399} fetchPriority="high" />
           </h1>
           <p className={styles.tagline} style={delay(1260)}>
             {orbisCopy.hero.tagline}

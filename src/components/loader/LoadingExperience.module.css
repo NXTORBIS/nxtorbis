@@ -279,8 +279,8 @@
   background-size: 260% 100%;
   background-position: 132% 0;
   background-repeat: no-repeat;
-  -webkit-mask-image: url("/brand/nxtorbis-wordmark.png");
-  mask-image: url("/brand/nxtorbis-wordmark.png");
+  -webkit-mask-image: url("/brand/nxtorbis-wordmark.webp");
+  mask-image: url("/brand/nxtorbis-wordmark.webp");
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;

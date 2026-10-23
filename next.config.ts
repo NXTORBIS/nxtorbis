@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    // Five separate stylesheets were blocking the first paint for about two
+    // seconds between them (measured with Lighthouse). This inlines what the
+    // page needs to render and loads the rest after.
+    optimizeCss: true,
+  },
 };
 
 export default nextConfig;

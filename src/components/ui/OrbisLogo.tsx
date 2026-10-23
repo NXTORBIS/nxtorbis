@@ -19,8 +19,8 @@ export function OrbisLogo({ display = false, className }: { display?: boolean; c
     // eslint-disable-next-line @next/next/no-img-element
     <img
       className={cx(styles.logo, className)}
-      src="/orbis/orbis-logo-sm.png"
-      srcSet="/orbis/orbis-logo-sm.png 331w, /orbis/orbis-logo.png 1321w"
+      src="/orbis/orbis-logo-sm.webp"
+      srcSet="/orbis/orbis-logo-sm.webp 265w, /orbis/orbis-logo.webp 1321w"
       // Headings get the full artwork; running text rarely needs more than the small one.
       sizes={display ? "480px" : "120px"}
       width={1321}
