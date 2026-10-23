@@ -115,6 +115,11 @@ document.head.appendChild(s)}},7000)}catch(e){}})()`;
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${interTight.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        {/* The first screen's picture, asked for before anything asks for it.
+            It is the largest thing painted on the home page. */}
+        <link rel="preload" as="image" href="/brand/hero-poster.webp" fetchPriority="high" />
+      </head>
       <body>
         <script id="entrance-boot" dangerouslySetInnerHTML={{ __html: ENTRANCE_BOOT }} />
         <noscript>
